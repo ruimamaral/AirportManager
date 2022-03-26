@@ -9,7 +9,6 @@ int main(){
 
 int command_listener() {
 	char command = getchar();
-	getchar(); /* remove whitespace chararcter */
 	switch (command) {
 		case 'q':
 			return 0;
@@ -39,13 +38,51 @@ void exec_a() {
 	char id[AP_ID_LENGHT], country[AP_COUNTRY_LENGHT], city[AP_CITY_LENGHT];
 	scanf("%s%s%[^\n]", id, country, city);
 	if (not_caps(id)) {
-		printf("invalid airport ID");
+		printf("invalid airport ID\n");
 	}
-	else if (global_airport_amount >= MAX_AP)) {
-		printf("too many airports");
+	else if (global_airport_amount >= MAX_AP) {
+		printf("too many airports\n");
 	}
-	else if (duplicate_airport(id)) {
-		printf("duplicate airport");
+	else if (is_duplicate(id, AIRPORTS)) {
+		printf("duplicate airport\n");
 	}
 	else add_airport(id, country, city);
+	printf("airport %s\n", id);
+}
+
+void exec_l() {
+	char c = getchar(), id[AP_ID_LENGHT];
+	int n_f;
+	if (c == ' ') {
+		for (scanf("%3s", id); c != '\n' && c != EOF; c = getchar()) {
+			if (!is_duplicate(id, AIRPORTS)) {
+				printf("<IDAeroporto>: no such airport ID\n");
+				return;
+			}
+			print_ap_info(find_airport(id));
+		}
+	}
+	else {
+		sort_airports()
+	}
+}
+
+void is_duplicate(char str[], int mode) {
+	int i;
+	if (mode == AIRPORTS) {
+		list = global_ap_id_list;
+		max = global_airport_amount;
+	}
+	else {
+		list = global_flt_code_list;
+		max = global_flight_amount
+	}	
+	for (i = 0; i < max; i++) {
+		if (!strcmp(list[i], str)) {
+			return TRUE;
+		}
+		else {
+			return FALSE;
+		}
+	}
 }
