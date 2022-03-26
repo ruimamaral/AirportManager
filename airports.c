@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <projeto.h>
 
 int global_airport_amount = 0;
@@ -33,14 +34,16 @@ void print_ap_info(airport ap) {
 
 /* ver a soma da data para dar sort nos voos*/
 void sort_airports() {
+	airport temp;
 	int i, j;
 	for (i = 1; i <= global_airport_amount; i++) {
 		strcpy(id1, global_airport_list[i].id);
 		j = i;
+		temp = global_airport_list[i];
 		while (j > 0 && strcmp(id1, global_airport_list[j - 1].id) < 0) {
-			strcpy(global_airport_list[j], global_airport_list[j - 1]);
+			global_airport_list[j] = global_airport_list[j - 1];
 			j--;
 		}
-		strcpy(global_airport_list[j], global_airport_list[i])
+		global_airport_list[j] = temp; 
 	}
 }
