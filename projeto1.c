@@ -1,9 +1,10 @@
 #include <stdio.h>
-#include <projeto1.h>
+#include "projeto1.h"
 #include <string.h>
 
 int main(){
-	while (command_listener());
+	while (command_listener()) {
+	}
 	return 0;
 }
 
@@ -17,7 +18,7 @@ int command_listener() {
 			return 1;
 		case 'l':
 			exec_l();
-			return 1;
+			return 1; /*
 		case 'v':
 			exec_v();
 			return 1;
@@ -29,33 +30,34 @@ int command_listener() {
 			return 1;
 		case 't':
 			exec_t();
-			return 1;
+			return 1; */
 	}
+	return 1;
 }
 
-int global_airport_amount;
 void exec_a() {
-	char id[AP_ID_LENGHT], country[AP_COUNTRY_LENGHT], city[AP_CITY_LENGHT];
+	char id[AP_ID_LENGTH], country[AP_COUNTRY_LENGTH], city[AP_CITY_LENGTH];
 	scanf("%s%s%[^\n]", id, country, city);
-	if (not_caps(id)) {
+	if (!is_upper(id)) {
 		printf("invalid airport ID\n");
 	}
 	else if (global_airport_amount >= MAX_AP) {
 		printf("too many airports\n");
 	}
-	else if (is_duplicate(id, AIRPORTS)) {
+	else if (is_airport(id)) {
 		printf("duplicate airport\n");
 	}
-	else add_airport(id, country, city);
-	printf("airport %s\n", id);
+	else {
+		add_airport(id, country, city);
+		printf("airport %s\n", id);
+	}
 }
 
 void exec_l() {
-	char c = getchar(), id[AP_ID_LENGHT];
-	int n_f;
+	char c = getchar(), id[AP_ID_LENGTH];
 	if (c == ' ') {
 		for (scanf("%3s", id); c != '\n' && c != EOF; c = getchar()) {
-			if (!is_duplicate(id, AIRPORTS)) {
+			if (!is_airport(id)) {
 				printf("<IDAeroporto>: no such airport ID\n");
 				return;
 			}
@@ -63,26 +65,28 @@ void exec_l() {
 		}
 	}
 	else {
-		sort_airports()
+		sort_airports();
 	}
 }
 
-void is_duplicate(char str[], int mode) {
+int is_airport(char str[]) {
 	int i;
-	if (mode == AIRPORTS) {
-		list = global_ap_id_list;
-		max = global_airport_amount;
-	}
-	else {
-		list = global_flt_code_list;
-		max = global_flight_amount
-	}	
-	for (i = 0; i < max; i++) {
-		if (!strcmp(list[i], str)) {
+	for (i = 0; i < global_airport_amount; i++) {
+		if (!strcmp(global_ap_id_list[i], str)) {
 			return TRUE;
 		}
-		else {
-			return FALSE;
+	}
+	return FALSE;
+}
+
+int is_upper(char str[]) {
+	char c;
+	int i, len = strlen(str);
+	for (i = 0; i < len; i++) {
+		c = str[i];
+		if (c < 'A' || c > 'Z') {
+	  		return FALSE;
 		}
 	}
+	return TRUE;
 }
