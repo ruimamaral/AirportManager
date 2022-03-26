@@ -1,9 +1,14 @@
 #include <stdio.h>
 
+#define AP_ID_LENGHT 4
+#define AP_COUNTRY_LENGHT 51
+#define AP_CITY_LENGHT 31
+#define FLIGHT_CODE_LENGTH 7
+#define MAX_AP 40
 typedef struct {
-	char id[4];
-	char country[31];
-	char city[51];
+	char id[AP_ID_LENGHT];
+	char country[AP_COUNTRY_LENGHT];
+	char city[AP_CITY_LENGHT];
 } airport;
 
 typedef struct {
@@ -19,7 +24,7 @@ typedef struct {
 } date;
 
 typedef struct {
-	char code[7];
+	char code[FLIGHT_CODE_LENGTH];
 	airport origin;
 	airport destination;
 	timestamp dep_time;
