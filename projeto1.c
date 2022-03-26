@@ -1,7 +1,7 @@
 # include <stdio.h>
 
 int main(){
-	while (command_listener())
+	while (command_listener());
 }
 
 int command_listener() {
