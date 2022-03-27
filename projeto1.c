@@ -55,6 +55,7 @@ void exec_a() {
 
 void exec_l() {
 	char c = getchar(), id[AP_ID_LENGTH];
+	int i;
 	if (c == ' ') {
 		while (c != '\n' && c != EOF) {
 			fgets(id, AP_ID_LENGTH, stdin);
@@ -69,6 +70,9 @@ void exec_l() {
 	}
 	else {
 		sort_airports();
+		for (i = 0; i < global_airport_amount; i++) {
+			print_ap_info(global_airport_list[i]);
+		}
 	}
 }
 

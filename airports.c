@@ -38,7 +38,7 @@ void sort_airports() {
 	char id1[AP_ID_LENGTH];
 	airport temp;
 	int i, j;
-	for (i = 1; i <= global_airport_amount; i++) {
+	for (i = 1; i < global_airport_amount; i++) {
 		strcpy(id1, global_airport_list[i].id);
 		j = i;
 		temp = global_airport_list[i];
