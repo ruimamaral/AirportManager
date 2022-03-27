@@ -83,17 +83,44 @@ void exec_l() {
 }
 
 void exec_v() {
-	
-}
-
-int is_airport(char str[]) {
-	int i;
-	for (i = 0; i < global_airport_amount; i++) {
-		if (!strcmp(global_ap_id_list[i], str)) {
-			return TRUE;
+	char c = getchar();
+	flight new_f;
+	if (c == ' ') { /* checks if there are more arguments */
+		scanf("%s %s %s %d-%d-%d %d:%d %d:%d %d",
+			new_f.code, new_f.origin, new_f.destination,
+			new_f.dep_date.d, new_f.dep_date.m, new_f.dep_date.y,
+			new_f.dep_time.h, new_f.dep_time.min,
+			new_f.duration.h, new_f.duration.min,
+			new_f.capacity
+		);
+		if (invalid_flt_code(code)) {
+			printf("invalid flight code\n");
+		}
+		else if (is_existing_flt(new_f.code, new_f.dep_date)) {
+			printf("flight already exists\n");
+		}
+		else if (!is_airport(new_f.origin) || !is_airport(new_f.destination)) {
+			printf("<IDAeroporto>: no such airport ID\n");
+		}
+		else if (global_flight_amount >= MAX_FLT) {
+			printf("too many flights\n");
+		}
+		else if (invalid_date(global_date, new_f.dep_date)) {
+			printf("invalid date\n");
+		}
+		else if (new_f.duration.h > MAX_FLT_DURATION) {
+			printf("invalid duration\n");
+		}
+		else if (new_f.capacity > MAX_CAP || new_f.capacity < MIN_CAP) {
+			printf("invalid capacity\n");
+		}
+		else {
+			add_flight(new_f);
 		}
 	}
-	return FALSE;
+	else {
+		list_flights(UNSORTED);
+	}
 }
 
 int is_upper(char str[]) {

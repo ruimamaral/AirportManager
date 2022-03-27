@@ -9,6 +9,10 @@
 #define MAX_AP 40
 #define AIRPORTS 1
 #define FLIGHTS 0
+#define MAX_FLT 30000
+#define MAX_FLT_DURATION 12
+#define MAX_CAP 100
+#define MIN_CAP 10
 
 typedef struct {
 	char id[AP_ID_LENGTH];
@@ -17,29 +21,29 @@ typedef struct {
 } airport;
 
 typedef struct {
-	int hours;
-	int minutes;
-	int seconds;
+	int h;
+	int min;
 } timestamp;
 
 typedef struct {
-	int day;
-	int month;
-	int year;
+	int d;
+	int m;
+	int y;
 } date;
 
 typedef struct {
 	char code[FLIGHT_CODE_LENGTH];
-	airport origin;
-	airport destination;
-	timestamp dep_time;
+	char origin[AP_ID_LENGTH];
+	char destination[AP_ID_LENGTH];
 	date dep_date;
+	timestamp dep_time;
+	timestamp duration;
 	int capacity;
 } flight;
 
 extern int global_airport_amount;
 extern airport global_airport_list[];
-extern char global_ap_id_list[][AP_ID_LENGTH];
+/* extern char global_ap_id_list[][AP_ID_LENGTH]; */
 
 /* PROTOTYPES */
 

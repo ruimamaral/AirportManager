@@ -30,7 +30,17 @@ airport find_airport(char id[]) {
 
 void print_ap_info(airport ap) {
 	int n_f = 69;/*get_n_flights(ap.id);*/
-	printf("%s %s %s %d\n", ap.id, ap.country, ap.city, n_f);
+	printf("%s %s %s %d\n", ap.id, ap.city, ap.country, n_f);
+}
+
+int is_airport(char str[]) {
+	int i;
+	for (i = 0; i < global_airport_amount; i++) {
+		if (!strcmp(global_ap_id_list[i], str)) {
+			return TRUE;
+		}
+	}
+	return FALSE;
 }
 
 /* ver a soma da data para dar sort nos voos*/
