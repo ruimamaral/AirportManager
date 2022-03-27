@@ -56,12 +56,15 @@ void exec_a() {
 void exec_l() {
 	char c = getchar(), id[AP_ID_LENGTH];
 	if (c == ' ') {
-		for (scanf("%3s", id); c != '\n' && c != EOF; c = getchar()) {
+		while (c != '\n' && c != EOF) {
+			fgets(id, AP_ID_LENGTH, stdin);
 			if (!is_airport(id)) {
-				printf("<IDAeroporto>: no such airport ID\n");
-				return;
+				printf("<IDAeroporto>: no such airport ID\n");	
 			}
-			print_ap_info(find_airport(id));
+			else {
+				print_ap_info(find_airport(id));
+			}
+			c = getchar();
 		}
 	}
 	else {
