@@ -2,6 +2,8 @@
 #include "projeto1.h"
 #include <string.h>
 
+int aps_sorted;
+
 int main(){
 	while (command_listener()) {
 	}
@@ -50,6 +52,7 @@ void exec_a() {
 	else {
 		add_airport(id, country, city);
 		printf("airport %s\n", id);
+		aps_sorted = FALSE;
 	}
 }
 
@@ -69,11 +72,18 @@ void exec_l() {
 		}
 	}
 	else {
-		sort_airports();
+		if (!aps_sorted) {   /* checks if airport array is already sorted */
+			sort_airports();
+			aps_sorted = TRUE;
+		}
 		for (i = 0; i < global_airport_amount; i++) {
 			print_ap_info(global_airport_list[i]);
 		}
 	}
+}
+
+void exec_v() {
+	
 }
 
 int is_airport(char str[]) {
