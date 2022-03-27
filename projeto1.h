@@ -34,11 +34,11 @@ typedef struct {
 typedef struct {
 	char code[FLIGHT_CODE_LENGTH];
 	char origin[AP_ID_LENGTH];
-	char destination[AP_ID_LENGTH];
+	char destin[AP_ID_LENGTH];
 	date dep_date;
 	timestamp dep_time;
-	timestamp duration;
-	int capacity;
+	timestamp dura;
+	int cap;
 } flight;
 
 extern int global_airport_amount;

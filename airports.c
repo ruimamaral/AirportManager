@@ -4,16 +4,15 @@
 
 int global_airport_amount = 0;
 airport global_airport_list[MAX_AP];
-char global_ap_id_list[MAX_AP][AP_ID_LENGTH];
 
+/*maybe mudar e meter tudo como os flights */
 void add_airport(char id[], char country[], char city[]) {
 	airport new_airport;
 	strcpy(new_airport.id, id);
 	strcpy(new_airport.country, country);
 	strcpy(new_airport.city, city);
-	global_airport_list[global_airport_amount] = new_airport;
-	strcpy(global_ap_id_list[global_airport_amount], id);
-	global_airport_amount++;
+
+	global_airport_list[global_airport_amount++] = new_airport;
 }
 
 airport find_airport(char id[]) {
@@ -36,7 +35,7 @@ void print_ap_info(airport ap) {
 int is_airport(char str[]) {
 	int i;
 	for (i = 0; i < global_airport_amount; i++) {
-		if (!strcmp(global_ap_id_list[i], str)) {
+		if (!strcmp(global_airport_list[i].id, str)) {
 			return TRUE;
 		}
 	}

@@ -40,16 +40,13 @@ int command_listener() {
 void exec_a() {
 	char id[AP_ID_LENGTH], country[AP_COUNTRY_LENGTH], city[AP_CITY_LENGTH];
 	scanf("%s%s%[^\n]", id, country, city);
-	if (!is_upper(id)) {
+	if (!isupper_str(id)) {
 		printf("invalid airport ID\n");
-	}
-	else if (global_airport_amount >= MAX_AP) {
+	} else if (global_airport_amount >= MAX_AP) {
 		printf("too many airports\n");
-	}
-	else if (is_airport(id)) {
+	} else if (is_airport(id)) {
 		printf("duplicate airport\n");
-	}
-	else {
+	} else {
 		add_airport(id, country, city);
 		printf("airport %s\n", id);
 		aps_sorted = FALSE;
@@ -64,14 +61,12 @@ void exec_l() {
 			fgets(id, AP_ID_LENGTH, stdin);
 			if (!is_airport(id)) {
 				printf("<IDAeroporto>: no such airport ID\n");	
-			}
-			else {
+			} else {
 				print_ap_info(find_airport(id));
 			}
 			c = getchar();
 		}
-	}
-	else {
+	} else {
 		if (!aps_sorted) {   /* checks if airport array is already sorted */
 			sort_airports();
 			aps_sorted = TRUE;
@@ -87,43 +82,35 @@ void exec_v() {
 	flight new_f;
 	if (c == ' ') { /* checks if there are more arguments */
 		scanf("%s %s %s %d-%d-%d %d:%d %d:%d %d",
-			new_f.code, new_f.origin, new_f.destination,
+			new_f.code, new_f.origin, new_f.destin,
 			new_f.dep_date.d, new_f.dep_date.m, new_f.dep_date.y,
 			new_f.dep_time.h, new_f.dep_time.min,
-			new_f.duration.h, new_f.duration.min,
-			new_f.capacity
-		);
+			new_f.dura.h, new_f.dura.min,
+			new_f.cap);
+
 		if (invalid_flt_code(code)) {
 			printf("invalid flight code\n");
-		}
-		else if (is_existing_flt(new_f.code, new_f.dep_date)) {
+		} else if (is_flight(new_f.code, new_f.dep_date)) {
 			printf("flight already exists\n");
-		}
-		else if (!is_airport(new_f.origin) || !is_airport(new_f.destination)) {
+		} else if (!is_airport(new_f.origin) || !is_airport(new_f.destination)) {
 			printf("<IDAeroporto>: no such airport ID\n");
-		}
-		else if (global_flight_amount >= MAX_FLT) {
+		} else if (global_flight_amount >= MAX_FLT) {
 			printf("too many flights\n");
-		}
-		else if (invalid_date(global_date, new_f.dep_date)) {
+		} else if (invalid_date(global_date, new_f.dep_date)) {
 			printf("invalid date\n");
-		}
-		else if (new_f.duration.h > MAX_FLT_DURATION) {
+		} else if (new_f.dura.h > MAX_FLT_DURATION) {
 			printf("invalid duration\n");
-		}
-		else if (new_f.capacity > MAX_CAP || new_f.capacity < MIN_CAP) {
+		} else if (new_f.cap > MAX_CAP || new_f.cap < MIN_CAP) {
 			printf("invalid capacity\n");
+		} else {
+			global_flt_list[global_flight_amount++] = new_f;
 		}
-		else {
-			add_flight(new_f);
-		}
-	}
-	else {
+	} else {
 		list_flights(UNSORTED);
 	}
 }
 
-int is_upper(char str[]) {
+int isupper_str(char str[]) {
 	char c;
 	int i, len = strlen(str);
 	for (i = 0; i < len; i++) {
