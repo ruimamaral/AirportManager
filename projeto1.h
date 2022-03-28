@@ -13,8 +13,8 @@
 #define MAX_FLT_DURATION 12
 #define MAX_CAP 100
 #define MIN_CAP 10
-#define MINS_IN_YEAR 365 * 24 * 60
-#define MINS_IN_DAY 24 * 60
+#define MINS_IN_YEAR 525600
+#define MINS_IN_DAY 1440
 
 typedef struct {
 	char id[AP_ID_LENGTH];
