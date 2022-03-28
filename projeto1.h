@@ -13,6 +13,8 @@
 #define MAX_FLT_DURATION 12
 #define MAX_CAP 100
 #define MIN_CAP 10
+#define MINS_IN_YEAR 365 * 24 * 60
+#define MINS_IN_DAY 24 * 60
 
 typedef struct {
 	char id[AP_ID_LENGTH];
@@ -23,20 +25,16 @@ typedef struct {
 typedef struct {
 	int h;
 	int min;
-} timestamp;
-
-typedef struct {
 	int d;
-	int m;
+	int mth;
 	int y;
-} date;
+} timestamp;
 
 typedef struct {
 	char code[FLIGHT_CODE_LENGTH];
 	char origin[AP_ID_LENGTH];
 	char destin[AP_ID_LENGTH];
-	date dep_date;
-	timestamp dep_time;
+	timestamp dep_ts;
 	timestamp dura;
 	int cap;
 } flight;

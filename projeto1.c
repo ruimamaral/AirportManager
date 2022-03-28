@@ -83,8 +83,8 @@ void exec_v() {
 	if (c == ' ') { /* checks if there are more arguments */
 		scanf("%s %s %s %d-%d-%d %d:%d %d:%d %d",
 			new_f.code, new_f.origin, new_f.destin,
-			new_f.dep_date.d, new_f.dep_date.m, new_f.dep_date.y,
-			new_f.dep_time.h, new_f.dep_time.min,
+			new_f.dep_ts.d, new_f.dep_ts.mth, new_f.dep_ts.y,
+			new_f.dep_ts.h, new_f.dep_ts.min,
 			new_f.dura.h, new_f.dura.min,
 			new_f.cap);
 

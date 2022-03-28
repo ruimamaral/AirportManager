@@ -32,6 +32,18 @@ int invalid_flt_code(char cd[]) {
 	return FALSE
 }
 
-int invalid_date(date dt1, date dt2) {
-	if (dt1.y >= dt2.y && dt1.m >= dt2.m && dt1.d >)
+int set_unix_time(timestamp ts) {
+	int yr = ts.y, mth = ts.mth, days = ts.d, hrs = ts.h, mins = ts.min;
+	int min_sum = yr * MINS_IN_YEAR + get_month_mins(mth - 1);
+	min_sum += days * MINS_IN_DAY + hrs * 60 + mins;
+	return min_sum;
+}
+
+int get_month_mins(int month) {
+	int days_in_month[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	int i, min_sum = 0;
+	for (i = 0; i < month; i++) {
+		min_sum += days_in_month[i] * MINS_IN_DAY;
+	}
+	return min_sum;
 }
