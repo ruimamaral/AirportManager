@@ -34,7 +34,7 @@ typedef struct {
 	char code[FLIGHT_CODE_LENGTH];
 	char origin[AP_ID_LENGTH];
 	char destin[AP_ID_LENGTH];
-	timestamp dep_ts;
+	int dep_date;
 	timestamp dura;
 	int cap;
 } flight;

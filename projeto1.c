@@ -60,7 +60,7 @@ void exec_l() {
 		while (c != '\n' && c != EOF) {
 			fgets(id, AP_ID_LENGTH, stdin);
 			if (!is_airport(id)) {
-				printf("<IDAeroporto>: no such airport ID\n");	
+				printf("%s: no such airport ID\n", id);	
 			} else {
 				print_ap_info(find_airport(id));
 			}
@@ -80,30 +80,17 @@ void exec_l() {
 void exec_v() {
 	char c = getchar();
 	flight new_f;
+	timestamp dep_dt;
 	if (c == ' ') { /* checks if there are more arguments */
 		scanf("%s %s %s %d-%d-%d %d:%d %d:%d %d",
-			new_f.code, new_f.origin, new_f.destin,
-			&new_f.dep_ts.d, &new_f.dep_ts.mth, &new_f.dep_ts.y,
-			&new_f.dep_ts.h, &new_f.dep_ts.min,
-			&new_f.dura.h, &new_f.dura.min,
-			&new_f.cap);
+			new_f.code, new_f.origin, new_f.destin, &dep_dt.y,
+			&dep_dt.mth, &dep_dt.d, &dep_dt.h, &dep_dt.min,
+			&new_f.dura.h, &new_f.dura.min, &new_f.cap);
 
-		if (invalid_flt_code(code)) {
-			printf("invalid flight code\n");
-		} else if (is_flight(new_f.code, new_f.dep_date)) {
-			printf("flight already exists\n");
-		} else if (!is_airport(new_f.origin) || !is_airport(new_f.destination)) {
-			printf("<IDAeroporto>: no such airport ID\n");
-		} else if (global_flight_amount >= MAX_FLT) {
-			printf("too many flights\n");
-		} else if (invalid_date(global_date, new_f.dep_date)) {
-			printf("invalid date\n");
-		} else if (new_f.dura.h > MAX_FLT_DURATION) {
-			printf("invalid duration\n");
-		} else if (new_f.cap > MAX_CAP || new_f.cap < MIN_CAP) {
-			printf("invalid capacity\n");
+		if (invalid_flt_agrs(new_f, dep_dt) {
+			return;
 		} else {
-			global_flt_list[global_flight_amount++] = new_f;
+			add_flight(new_f, dep_dt);
 		}
 	} else {
 		list_flights(UNSORTED);

@@ -7,7 +7,35 @@ int global_flight_amount = 0;
 flight global_flt_list[MAX_FLT];
 flight global_sorted_flt_list[MAX_FLT];
 
+int invalid_flt_args(flight new_f, timestamp dep_dt) {
+	if (invalid_flt_code(new_f.code)) {
+		printf("invalid flight code\n");
+	} else if (is_flight(new_f.code, new_f.dep_date)) {
+		printf("flight already exists\n");
+	} else if (!is_airport(new_f.origin)) {
+		printf("%s: no such airport ID\n", new_f.origin);
+	} else if (!is_airport(new_f.destin)) {
+		printf("%s: no such airport ID\n", new_f.destin);
+	} else if (global_flight_amount >= MAX_FLT) {
+		printf("too many flights\n");
+	} else if (invalid_date(dep_dt)) {
+		printf("invalid date\n");
+	} else if (invalid_duration(dura.h, dura.min)) {
+		printf("invalid duration\n");
+	} else if (new_f.cap > MAX_CAP || new_f.cap < MIN_CAP) {
+		printf("invalid capacity\n");
+	} else {
+		return FALSE;
+	} 
+	return TRUE;
+}
 
+void add_flight(flight flight, timestamp dep_date) {
+	int dep_date_mins;
+	dep_date_mins = get_unix_time(dep_date);
+	flight.dep_date = dep_date_mins;
+	global_flt_list[global_flight_amount++] = flight;
+}
   
 int is_flight(char str[]) {
 	int i;
@@ -17,6 +45,25 @@ int is_flight(char str[]) {
 		}
 	}
 	return FALSE;
+}
+
+void list_flights(int mode) {
+	flight list[];
+	if (mode == UNSORTED) {
+		list = global_flt_list;
+	} else {
+		list = global_sorted_flt_list;
+	}
+	for (i = 0; sizeof(list); i++) {
+		print_flt_info(list[i]);
+	}
+}
+
+void print_flt_info(flight flt) {
+	dep_dt = unix_to_regular(flt.dep_date);
+	printf("%s %s %s %02d-%02d-%d %02d:%02d",
+		flt.code, flt.origin, flt.destin, dep_dt.y,
+		dep_dt.mth, ep_dt.d, dep_dt.h, dep_dt.mins);
 }
 
 int invalid_flt_code(char cd[]) {
@@ -32,34 +79,7 @@ int invalid_flt_code(char cd[]) {
 	return FALSE
 }
 
-int set_unix_time(timestamp ts) {
-	int yr = ts.y, mth = ts.mth, days = ts.d, hrs = ts.h, mins = ts.min;
-	int min_sum = yr * MINS_IN_YEAR + get_month_mins(mth - 1);
-	min_sum += days * MINS_IN_DAY + hrs * 60 + mins;
-	return min_sum;
-}
-
-int get_month_mins(int month) {
-	int days_in_month[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-	int i, min_sum = 0;
-	for (i = 0; i < month; i++) {
-		min_sum += days_in_month[i] * MINS_IN_DAY;
-	}
-	return min_sum;
-}
-
-timestamp unix_to_regular(int min_sum) {
-	timestamp ts;
-	int mth, mth_mins;
-	ts.y = min_sum / (MINS_IN_YEAR);
-	min_sum -= ts.y * MINS_IN_YEAR;
-	mth_mins = get_month_mins(1);
-	for (mth = 1; min_sum - mth_mins >= 0; mth_mins = get_month_mins(++mth)) {}
-	min_sum -= get_month_mins(mth - 1);
-	ts.mth = mth;
-	ts.d = min_sum / MINS_IN_DAY + 1;
-	min_sum -= (day - 1) * MINS_IN_DAY;
-	ts.h = min_sum / 60;
-	ts.min = min_sum % 60;
-	return ts;
+int invalid_duration(int hours, int mins) {
+	max_d = MAX_FLT_DURATION;
+	return (hours > max_d || (hours = max_d && mins));
 }
