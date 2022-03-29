@@ -2,7 +2,7 @@
 #include <string.h>
 #include "projeto1.h"
 
-int global_date = get_unix_time(timestamp = {2022, 1, 1, 0, 0});
+timestamp global_date = {2022, 1, 1, 0, 0};
 
 int get_unix_time(timestamp ts) {
 	int yr = ts.y, mth = ts.mth, days = ts.d, hrs = ts.h, mins = ts.min;
@@ -37,11 +37,20 @@ timestamp unix_to_regular(int min_sum) {
 }
 
 int invalid_date(timestamp ts) {
-	int unix1, unix2;
-	unix1 = get_unix_time(ts);
-	unix2 = get_unix_time(global_date);
 	is_past = datecmp(ts, global_date) < 0;
-	return (is_past || unix1 - unix2 > MINS_IN_YEAR);
+	return (is_past || unix_date - global_date > MINS_IN_YEAR);
 }
 
+int datecmp(timestamp date1, timestamp date2) {
+	int unix1, unix2;
+	unix1 = get_unix_time(date1);
+	unix2 = get_unix_time(date2);
+	if (unix1 > unix2) {
+		return 1;
+	} else if (unix1 = unix2) {
+		return 0;
+	} else {
+		return -1;
+	}
+}
 

@@ -43,6 +43,7 @@ int is_airport(char str[]) {
 }
 
 /* ver a soma da data para dar sort nos voos*/
+/*
 void sort_airports() {
 	char id1[AP_ID_LENGTH];
 	airport temp;
@@ -58,3 +59,4 @@ void sort_airports() {
 		global_airport_list[j] = temp; 
 	}
 }
+*/

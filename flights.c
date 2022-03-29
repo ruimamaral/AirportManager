@@ -5,12 +5,12 @@
 
 int global_flight_amount = 0;
 flight global_flt_list[MAX_FLT];
-flight global_sorted_flt_list[MAX_FLT];
+flight global_srtd_flt_list[MAX_FLT];
 
 int invalid_flt_args(flight new_f, timestamp dep_dt) {
 	if (invalid_flt_code(new_f.code)) {
 		printf("invalid flight code\n");
-	} else if (is_flight(new_f.code, new_f.dep_date)) {
+	} else if (is_flight(new_f.code)) {
 		printf("flight already exists\n");
 	} else if (!is_airport(new_f.origin)) {
 		printf("%s: no such airport ID\n", new_f.origin);
@@ -31,9 +31,7 @@ int invalid_flt_args(flight new_f, timestamp dep_dt) {
 }
 
 void add_flight(flight flight, timestamp dep_date) {
-	int dep_date_mins;
-	dep_date_mins = get_unix_time(dep_date);
-	flight.dep_date = dep_date_mins;
+	flight.dep_date = dep_date;
 	global_flt_list[global_flight_amount++] = flight;
 }
   
@@ -48,22 +46,25 @@ int is_flight(char str[]) {
 }
 
 void list_flights(int mode) {
-	flight list[];
+	int len;
+	flight *list;
 	if (mode == UNSORTED) {
+		len = global_flight_amount;
 		list = global_flt_list;
 	} else {
-		list = global_sorted_flt_list;
+		len = global_srtd_flt_amount;
+		list = global_srtd_flt_list;
 	}
-	for (i = 0; sizeof(list); i++) {
+	for (i = 0; i < len; i++) {
 		print_flt_info(list[i]);
 	}
 }
 
 void print_flt_info(flight flt) {
-	dep_dt = unix_to_regular(flt.dep_date);
+	dep_dt = flt.dep_date;
 	printf("%s %s %s %02d-%02d-%d %02d:%02d",
 		flt.code, flt.origin, flt.destin, dep_dt.y,
-		dep_dt.mth, ep_dt.d, dep_dt.h, dep_dt.mins);
+		dep_dt.mth, dep_dt.d, dep_dt.h, dep_dt.mins);
 }
 
 int invalid_flt_code(char cd[]) {
@@ -82,4 +83,33 @@ int invalid_flt_code(char cd[]) {
 int invalid_duration(int hours, int mins) {
 	max_d = MAX_FLT_DURATION;
 	return (hours > max_d || (hours = max_d && mins));
+}
+
+int get_flts_leaving(char id[]) {
+	int i;
+	flight flight;
+	global_srtd_flt_amount = 0; /* resets sorted flights counter */
+	for (i = 0; i < global_flight_amount; i++) {
+		flight = global_flt_list[i];
+		if (!strcmp(flight.origin, id)) {
+			global_srtd_flt_list[global_srtd_flt_amount++] = flight;
+		}
+	}
+	return global_srtd_flt_amount;
+}
+
+void sort_flights() {
+	timestamp d;
+	flight temp;
+	int i, j;
+	for (i = 1; i < global_srtd_flt_amount; i++) {
+		d = global_srtd_flt_list[i].dep_date;
+		j = i;
+		temp = global_srtd_flt_list[i];
+		while (j > 0 && datecmp(d, global_srtd_flt_list[j - 1].dep_date) > 0) {
+			global_srtd_flt_list[j] = global_srtd_flt_list[j - 1];
+			j--;
+		}
+		global_srtd_flt_list[j] = temp; 
+	}
 }

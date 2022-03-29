@@ -39,7 +39,7 @@ int command_listener() {
 
 void exec_a() {
 	char id[AP_ID_LENGTH], country[AP_COUNTRY_LENGTH], city[AP_CITY_LENGTH];
-	scanf("%s%s%[^\n]", id, country, city);
+	scanf("%s %s %[^\n]", id, country, city);
 	if (!isupper_str(id)) {
 		printf("invalid airport ID\n");
 	} else if (global_airport_amount >= MAX_AP) {
@@ -87,14 +87,35 @@ void exec_v() {
 			&dep_dt.mth, &dep_dt.d, &dep_dt.h, &dep_dt.min,
 			&new_f.dura.h, &new_f.dura.min, &new_f.cap);
 
-		if (invalid_flt_agrs(new_f, dep_dt) {
+		if (invalid_flt_agrs(new_f, dep_dt)) {
 			return;
 		} else {
 			add_flight(new_f, dep_dt);
 		}
 	} else {
-		list_flights(UNSORTED);
+		list_flights(global_flight_list);
 	}
+}
+
+void exec_p() {
+	char id[AP_ID_LENGTH];
+	scanf("%s", id);
+	get_flts_leaving(id);
+	list_flights(SORTED);
+}
+
+void exec_c() {
+
+}
+
+void exec_t() {
+	timestamp new_date;
+	scanf("%d-%d-%d", new_date.d, new_date.mon, new_date.y);
+	if (!invalid_date (new_date)) {
+		global_date = new_date;
+	}
+	printf("invalid date\n");
+	return;
 }
 
 int isupper_str(char str[]) {
@@ -108,3 +129,4 @@ int isupper_str(char str[]) {
 	}
 	return TRUE;
 }
+

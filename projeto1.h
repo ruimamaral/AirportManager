@@ -15,6 +15,8 @@
 #define MIN_CAP 10
 #define MINS_IN_YEAR 525600
 #define MINS_IN_DAY 1440
+#define UNSORTED 1
+#define SORTED 0
 
 typedef struct {
 	char id[AP_ID_LENGTH];
@@ -34,13 +36,17 @@ typedef struct {
 	char code[FLIGHT_CODE_LENGTH];
 	char origin[AP_ID_LENGTH];
 	char destin[AP_ID_LENGTH];
-	int dep_date;
+	timestamp dep_date;
 	timestamp dura;
 	int cap;
 } flight;
 
 extern int global_airport_amount;
 extern airport global_airport_list[];
+extern flight global_flt_list[];
+extern flight global_srtd_flt_list[];
+extern int global_srtd_flt_amount;
+extern int global_flight_amount;
 /* extern char global_ap_id_list[][AP_ID_LENGTH]; */
 
 /* PROTOTYPES */
