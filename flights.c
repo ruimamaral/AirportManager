@@ -88,7 +88,7 @@ int invalid_duration(int hours, int mins) {
 int get_flts_leaving(char id[]) {
 	int i;
 	flight flight;
-	global_srtd_flt_amount = 0; /* resets sorted flights counter */
+	global_srtd_flt_amount = 0; /* resets counter */
 	for (i = 0; i < global_flight_amount; i++) {
 		flight = global_flt_list[i];
 		if (!strcmp(flight.origin, id)) {
@@ -96,6 +96,26 @@ int get_flts_leaving(char id[]) {
 		}
 	}
 	return global_srtd_flt_amount;
+}
+
+void get_flts_arriving(char id[]) {
+	int i;
+	flight flight;
+	global_srtd_flt_amount = 0; /* resets counter */
+	for (i = 0; i < global_flight_amount; i++) {
+		flight = global_flt_list[i];
+		if (!strcmp(flight.destin, id)) {
+			flight.dep_date = get_date_arrival(flight);
+			global_srtd_flt_list[global_srtd_flt_amount++] = flight;
+		}
+	}
+}
+
+timestamp get_date_arrival(flight flight) {
+	int unix1, unix2;
+	unix1 = get_unix_time(flight.dep_date);
+	unix2 = get_unix_time(flight.dura);
+	return unix_to_regular(unix1 + unix2);
 }
 
 void sort_flights() {

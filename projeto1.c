@@ -20,7 +20,7 @@ int command_listener() {
 			return 1;
 		case 'l':
 			exec_l();
-			return 1; /*
+			return 1;
 		case 'v':
 			exec_v();
 			return 1;
@@ -32,7 +32,7 @@ int command_listener() {
 			return 1;
 		case 't':
 			exec_t();
-			return 1; */
+			return 1;
 	}
 	return 1;
 }
@@ -105,7 +105,10 @@ void exec_p() {
 }
 
 void exec_c() {
-
+	char id[AP_ID_LENGTH];
+	scanf("%s", id);
+	get_flts_arriving(id);
+	list_flights(SORTED);
 }
 
 void exec_t() {

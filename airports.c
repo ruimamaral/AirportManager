@@ -28,7 +28,7 @@ airport find_airport(char id[]) {
 }
 
 void print_ap_info(airport ap) {
-	int n_f = 69;/*get_n_flights(ap.id);*/
+	int n_f = get_flts_leaving(ap.id);
 	printf("%s %s %s %d\n", ap.id, ap.city, ap.country, n_f);
 }
 
@@ -42,8 +42,6 @@ int is_airport(char str[]) {
 	return FALSE;
 }
 
-/* ver a soma da data para dar sort nos voos*/
-/*
 void sort_airports() {
 	char id1[AP_ID_LENGTH];
 	airport temp;
@@ -59,4 +57,4 @@ void sort_airports() {
 		global_airport_list[j] = temp; 
 	}
 }
-*/
+
