@@ -83,8 +83,8 @@ void exec_v() {
 	timestamp dep_dt;
 	if (c == ' ') { /* checks if there are more arguments */
 		scanf("%s %s %s %d-%d-%d %d:%d %d:%d %d",
-			new_f.code, new_f.origin, new_f.destin, &dep_dt.y,
-			&dep_dt.mth, &dep_dt.d, &dep_dt.h, &dep_dt.min,
+			new_f.code, new_f.origin, new_f.destin, &dep_dt.d,
+			&dep_dt.mth, &dep_dt.y, &dep_dt.h, &dep_dt.min,
 			&new_f.dura.h, &new_f.dura.min, &new_f.cap);
 
 		if (invalid_flt_args(new_f, dep_dt)) {
@@ -100,6 +100,9 @@ void exec_v() {
 void exec_p() {
 	char id[AP_ID_LENGTH];
 	scanf("%s", id);
+	if (!is_airport(id)) {
+		printf("%s: no such airport ID\n", id);	
+	}
 	get_flts_leaving(id);
 	list_flights(SORTED);
 }
@@ -107,6 +110,9 @@ void exec_p() {
 void exec_c() {
 	char id[AP_ID_LENGTH];
 	scanf("%s", id);
+	if (!is_airport(id)) {
+		printf("%s: no such airport ID\n", id);
+	}
 	get_flts_arriving(id);
 	list_flights(SORTED);
 }
@@ -114,10 +120,14 @@ void exec_c() {
 void exec_t() {
 	timestamp new_date;
 	scanf("%d-%d-%d", &new_date.d, &new_date.mth, &new_date.y);
-	if (!invalid_date (new_date)) {
-		global_date = new_date;
+	new_date.h = 0;  /* initialize hour and min */
+	new_date.min = 0;
+	if (invalid_date(new_date)) {
+		printf("invalid date\n");
+		return;
 	}
-	printf("invalid date\n");
+	global_date = new_date;
+	printf("%02d-%02d-%d\n", global_date.d, global_date.mth, global_date.y);
 	return;
 }
 

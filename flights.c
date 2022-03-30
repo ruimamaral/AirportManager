@@ -63,9 +63,9 @@ void list_flights(int mode) {
 
 void print_flt_info(flight flt) {
 	timestamp dep_dt = flt.dep_date;
-	printf("%s %s %s %02d-%02d-%d %02d:%02d",
-		flt.code, flt.origin, flt.destin, dep_dt.y,
-		dep_dt.mth, dep_dt.d, dep_dt.h, dep_dt.min);
+	printf("%s %s %s %02d-%02d-%d %02d:%02d\n",
+		flt.code, flt.origin, flt.destin, dep_dt.d,
+		dep_dt.mth, dep_dt.y, dep_dt.h, dep_dt.min);
 }
 
 int invalid_flt_code(char cd[]) {
@@ -83,7 +83,7 @@ int invalid_flt_code(char cd[]) {
 
 int invalid_duration(int hours, int mins) {
 	int max_d = MAX_FLT_DURATION;
-	return (hours > max_d || (hours = max_d && mins));
+	return (hours > max_d || (hours == max_d && mins));
 }
 
 int get_flts_leaving(char id[]) {

@@ -25,11 +25,11 @@ typedef struct {
 } airport;
 
 typedef struct {
+	int y;
+	int mth;
+	int d;
 	int h;
 	int min;
-	int d;
-	int mth;
-	int y;
 } timestamp;
 
 typedef struct {
