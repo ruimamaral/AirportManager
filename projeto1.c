@@ -93,7 +93,7 @@ void exec_v() {
 			add_flight(new_f, dep_dt);
 		}
 	} else {
-		list_flights(UNSORTED);
+		list_flights();
 	}
 }
 
@@ -102,9 +102,11 @@ void exec_p() {
 	scanf("%s", id);
 	if (!is_airport(id)) {
 		printf("%s: no such airport ID\n", id);	
+		return;
 	}
-	get_flts_leaving(id);
-	list_flights(SORTED);
+	get_flts_departing(id);
+	sort_flights();
+	list_srtd_flights(DEPARTING);
 }
 
 void exec_c() {
@@ -112,9 +114,11 @@ void exec_c() {
 	scanf("%s", id);
 	if (!is_airport(id)) {
 		printf("%s: no such airport ID\n", id);
+		return;
 	}
 	get_flts_arriving(id);
-	list_flights(SORTED);
+	sort_flights();
+	list_srtd_flights(ARRIVING);
 }
 
 void exec_t() {

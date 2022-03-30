@@ -42,6 +42,10 @@ int invalid_date(timestamp ts) {
 	return (is_past || unix1 - unix2 > MINS_IN_YEAR);
 }
 
+int same_day(timestamp ts1, timestamp ts2) {
+	return (ts1.y == ts2.y && ts1.mth == ts2.mth && ts1.d == ts2.d);
+}
+
 int datecmp(timestamp date1, timestamp date2) {
 	int unix1, unix2;
 	unix1 = get_unix_time(date1);

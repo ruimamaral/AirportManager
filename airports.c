@@ -28,7 +28,7 @@ airport find_airport(char id[]) {
 }
 
 void print_ap_info(airport ap) {
-	int n_f = get_flts_leaving(ap.id);
+	int n_f = get_flts_departing(ap.id);
 	printf("%s %s %s %d\n", ap.id, ap.city, ap.country, n_f);
 }
 

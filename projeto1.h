@@ -15,8 +15,8 @@
 #define MIN_CAP 10
 #define MINS_IN_YEAR 525600
 #define MINS_IN_DAY 1440
-#define UNSORTED 1
-#define SORTED 0
+#define ARRIVING 1
+#define DEPARTING 0
 
 typedef struct {
 	char id[AP_ID_LENGTH];
@@ -70,12 +70,14 @@ int is_airport(char[]);
 /*flights*/
 int invalid_flt_args(flight, timestamp);
 void add_flight(flight, timestamp);
-int is_flight(char[]);
-void list_flights(int);
+int is_flight(char[], timestamp);
+void list_flights();
+void list_srtd_flights(int);
 void print_flt_info(flight);
+void print_srtd_flt_info(flight, int);
 int invalid_flt_code(char[]);
 int invalid_duration(int, int);
-int get_flts_leaving(char[]);
+int get_flts_departing(char[]);
 void get_flts_arriving(char[]);
 timestamp get_date_arrival(flight);
 void sort_flights();
@@ -84,4 +86,5 @@ int get_unix_time(timestamp);
 int get_month_mins(int);
 timestamp unix_to_regular(int);
 int invalid_date(timestamp);
+int same_day(timestamp, timestamp);
 int datecmp(timestamp, timestamp);
