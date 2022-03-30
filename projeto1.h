@@ -3,8 +3,8 @@
 #define TRUE 1
 #define FALSE 0
 #define AP_ID_LENGTH 4
-#define AP_COUNTRY_LENGTH 51
-#define AP_CITY_LENGTH 31
+#define AP_COUNTRY_LENGTH 31
+#define AP_CITY_LENGTH 51
 #define FLIGHT_CODE_LENGTH 7
 #define MAX_AP 40
 #define AIRPORTS 1
