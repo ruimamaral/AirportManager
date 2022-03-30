@@ -12,7 +12,11 @@ int get_unix_time(timestamp ts) {
 }
 
 int get_month_mins(int month) {
-	int days_in_month[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	static const int days_in_month[] = {
+		31, 28, 31, 30,
+		31, 30, 31, 31,
+		30, 31, 30, 31
+	};
 	int i, min_sum = 0;
 	for (i = 0; i < month; i++) {
 		min_sum += days_in_month[i] * MINS_IN_DAY;

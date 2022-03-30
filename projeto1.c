@@ -5,8 +5,7 @@
 int aps_sorted;
 
 int main(){
-	while (command_listener()) {
-	}
+	while (command_listener()) {}
 	return 0;
 }
 
