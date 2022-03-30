@@ -126,10 +126,10 @@ void get_flts_arriving(char id[]) {
 	}
 }
 
-timestamp get_date_arrival(flight flight) {
+timestamp get_date_arrival(flight flt) {
 	int unix1, unix2;
-	unix1 = get_unix_time(flight.dep_date);
-	unix2 = get_unix_time(flight.dura);
+	unix1 = get_unix_time(flt.dep_date);
+	unix2 = flt.dura.h * 60 + flt.dura.min;
 	return unix_to_regular(unix1 + unix2);
 }
 
