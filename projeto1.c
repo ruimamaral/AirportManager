@@ -5,12 +5,11 @@
 int aps_sorted;
 
 int main(){
-	while (command_listener()) {}
+	while (command_listener(getchar())) {}
 	return 0;
 }
 
-int command_listener() {
-	char command = getchar();
+int command_listener(char command) {
 	switch (command) {
 		case 'q':
 			return 0;

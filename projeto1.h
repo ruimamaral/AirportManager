@@ -53,7 +53,7 @@ extern timestamp global_date;
 
 /* PROTOTYPES */
 
-int command_listener();
+int command_listener(char);
 void exec_l();
 void exec_a();
 void exec_v();
