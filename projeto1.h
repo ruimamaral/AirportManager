@@ -47,17 +47,41 @@ extern flight global_flt_list[];
 extern flight global_srtd_flt_list[];
 extern int global_srtd_flt_amount;
 extern int global_flight_amount;
+extern timestamp global_date;
 /* extern char global_ap_id_list[][AP_ID_LENGTH]; */
+
 
 /* PROTOTYPES */
 
-
+int command_listener();
+void exec_l();
+void exec_a();
+void exec_v();
+void exec_p();
+void exec_c();
+void exec_t();
+int isupper_str(char[]);
+/*airports*/
 void add_airport(char[], char[], char[]);
 airport find_airport(char[]);
 void print_ap_info(airport);
 void sort_airports();
-int is_upper(char[]);
 int is_airport(char[]);
-void exec_l();
-void exec_a();
-int command_listener();
+/*flights*/
+int invalid_flt_args(flight, timestamp);
+void add_flight(flight, timestamp);
+int is_flight(char[]);
+void list_flights(int);
+void print_flt_info(flight);
+int invalid_flt_code(char[]);
+int invalid_duration(int, int);
+int get_flts_leaving(char[]);
+void get_flts_arriving(char[]);
+timestamp get_date_arrival(flight);
+void sort_flights();
+/*dates*/
+int get_unix_time(timestamp);
+int get_month_mins(int);
+timestamp unix_to_regular(int);
+int invalid_date(timestamp);
+int datecmp(timestamp, timestamp);

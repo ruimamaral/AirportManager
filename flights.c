@@ -4,6 +4,7 @@
 #include "projeto1.h"
 
 int global_flight_amount = 0;
+int global_srtd_flt_amount = 0;
 flight global_flt_list[MAX_FLT];
 flight global_srtd_flt_list[MAX_FLT];
 
@@ -20,7 +21,7 @@ int invalid_flt_args(flight new_f, timestamp dep_dt) {
 		printf("too many flights\n");
 	} else if (invalid_date(dep_dt)) {
 		printf("invalid date\n");
-	} else if (invalid_duration(dura.h, dura.min)) {
+	} else if (invalid_duration(new_f.dura.h, new_f.dura.min)) {
 		printf("invalid duration\n");
 	} else if (new_f.cap > MAX_CAP || new_f.cap < MIN_CAP) {
 		printf("invalid capacity\n");
@@ -46,7 +47,7 @@ int is_flight(char str[]) {
 }
 
 void list_flights(int mode) {
-	int len;
+	int len, i;
 	flight *list;
 	if (mode == UNSORTED) {
 		len = global_flight_amount;
@@ -61,27 +62,27 @@ void list_flights(int mode) {
 }
 
 void print_flt_info(flight flt) {
-	dep_dt = flt.dep_date;
+	timestamp dep_dt = flt.dep_date;
 	printf("%s %s %s %02d-%02d-%d %02d:%02d",
 		flt.code, flt.origin, flt.destin, dep_dt.y,
-		dep_dt.mth, dep_dt.d, dep_dt.h, dep_dt.mins);
+		dep_dt.mth, dep_dt.d, dep_dt.h, dep_dt.min);
 }
 
 int invalid_flt_code(char cd[]) {
-	char chara;
+	int i = 3;
 	if (!isupper(cd[0]) || !isupper(cd[1]) || cd[2] > '9' || cd[2] < '1') {
 		return TRUE;
 	}
-	for (i = 3, chara = cd[i]; cd[i]; i++, chara = cd[i]) {
+	for (i = 3; cd[i]; ++i) {
 		if (!isdigit(cd[i])) {
 			return TRUE;
 		}
 	}
-	return FALSE
+	return FALSE;
 }
 
 int invalid_duration(int hours, int mins) {
-	max_d = MAX_FLT_DURATION;
+	int max_d = MAX_FLT_DURATION;
 	return (hours > max_d || (hours = max_d && mins));
 }
 

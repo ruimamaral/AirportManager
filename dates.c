@@ -30,15 +30,16 @@ timestamp unix_to_regular(int min_sum) {
 	min_sum -= get_month_mins(mth - 1);
 	ts.mth = mth;
 	ts.d = min_sum / MINS_IN_DAY + 1;
-	min_sum -= (day - 1) * MINS_IN_DAY;
+	min_sum -= (ts.d - 1) * MINS_IN_DAY;
 	ts.h = min_sum / 60;
 	ts.min = min_sum % 60;
 	return ts;
 }
 
 int invalid_date(timestamp ts) {
-	is_past = datecmp(ts, global_date) < 0;
-	return (is_past || unix_date - global_date > MINS_IN_YEAR);
+	int is_past = datecmp(ts, global_date) < 0;
+	int unix1 = get_unix_time(ts), unix2 = get_unix_time(global_date);
+	return (is_past || unix1 - unix2 > MINS_IN_YEAR);
 }
 
 int datecmp(timestamp date1, timestamp date2) {
@@ -47,7 +48,7 @@ int datecmp(timestamp date1, timestamp date2) {
 	unix2 = get_unix_time(date2);
 	if (unix1 > unix2) {
 		return 1;
-	} else if (unix1 = unix2) {
+	} else if (unix1 == unix2) {
 		return 0;
 	} else {
 		return -1;

@@ -87,13 +87,13 @@ void exec_v() {
 			&dep_dt.mth, &dep_dt.d, &dep_dt.h, &dep_dt.min,
 			&new_f.dura.h, &new_f.dura.min, &new_f.cap);
 
-		if (invalid_flt_agrs(new_f, dep_dt)) {
+		if (invalid_flt_args(new_f, dep_dt)) {
 			return;
 		} else {
 			add_flight(new_f, dep_dt);
 		}
 	} else {
-		list_flights(global_flight_list);
+		list_flights(UNSORTED);
 	}
 }
 
@@ -113,7 +113,7 @@ void exec_c() {
 
 void exec_t() {
 	timestamp new_date;
-	scanf("%d-%d-%d", new_date.d, new_date.mon, new_date.y);
+	scanf("%d-%d-%d", &new_date.d, &new_date.mth, &new_date.y);
 	if (!invalid_date (new_date)) {
 		global_date = new_date;
 	}
