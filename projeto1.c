@@ -17,7 +17,8 @@ int main(){
 }
 
 /*
- * Listens for commands entered by the user until it receives the 'q' command.
+ * Listens for commands entered by the user until it
+ * receives the 'q' command.
  */
 int command_listener(char command) {
 	switch (command) {
@@ -169,8 +170,8 @@ void exec_t() {
 }
 
 /*
- * Auxiliary function that returns 1 if all characters the string received
- * are part of the uppercase alphabet.
+ * Auxiliary function that receives a string and returns 1 if
+ * all characters in the string are part of the uppercase alphabet.
  */
 int isupper_str(char str[]) {
 	char c;
