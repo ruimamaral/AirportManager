@@ -8,6 +8,11 @@ int global_srtd_flt_amount = 0;
 flight global_flt_list[MAX_FLT];
 flight global_srtd_flt_list[MAX_FLT];
 
+void add_flight(flight flight, timestamp dep_date) {
+	flight.dep_date = dep_date;
+	global_flt_list[global_flight_amount++] = flight;
+}
+
 int invalid_flt_args(flight new_f, timestamp dep_dt) {
 	if (invalid_flt_code(new_f.code)) {
 		printf("invalid flight code\n");
@@ -30,15 +35,11 @@ int invalid_flt_args(flight new_f, timestamp dep_dt) {
 	} 
 	return TRUE;
 }
-
-void add_flight(flight flight, timestamp dep_date) {
-	flight.dep_date = dep_date;
-	global_flt_list[global_flight_amount++] = flight;
-}
   
 int is_flight(char str[], timestamp dt) {
 	int i;
 	flight flt;
+
 	for (i = 0; i < global_flight_amount; i++) {
 		flt = global_flt_list[i];
 		if (!strcmp(flt.code, str) && same_day(flt.dep_date, dt)) {
@@ -50,40 +51,44 @@ int is_flight(char str[], timestamp dt) {
 
 void list_flights() {
 	int i;
+	flight flt;
+
 	for (i = 0; i < global_flight_amount; i++) {
-		print_flt_info(global_flt_list[i]);
+		flt = global_flt_list[i];
+		printf("%s %s %s %02d-%02d-%d %02d:%02d\n",
+			flt.code, flt.origin, flt.destin, flt.dep_date.d,
+			flt.dep_date.mth, flt.dep_date.y, flt.dep_date.h,
+		 	flt.dep_date.min);
 	}
 }
 
-void list_srtd_flights(int mode) {
+void list_departing_flights() {
 	int i;
+	flight flt;
+
 	for (i = 0; i < global_srtd_flt_amount; i++) {
-		print_srtd_flt_info(global_srtd_flt_list[i], mode);
+		flt = global_srtd_flt_list[i];
+		printf("%s %s %02d-%02d-%d %02d:%02d\n",
+			flt.code, flt.destin, flt.dep_date.d, flt.dep_date.mth,
+		 	flt.dep_date.y, flt.dep_date.h, flt.dep_date.min);
 	}
 }
 
-void print_flt_info(flight flt) {
-	timestamp dep_dt = flt.dep_date;
-	printf("%s %s %s %02d-%02d-%d %02d:%02d\n",
-		flt.code, flt.origin, flt.destin, dep_dt.d,
-		dep_dt.mth, dep_dt.y, dep_dt.h, dep_dt.min);
-}
+void list_arriving_flights() {
+	int i;
+	flight flt;
 
-void print_srtd_flt_info(flight flt, int mode) {
-	timestamp dep_dt = flt.dep_date;
-	char id[AP_ID_LENGTH];
-	if (mode == ARRIVING) {
-		strcpy(id, flt.origin);
-	} else if (mode == DEPARTING) {
-		strcpy(id, flt.destin);
+	for (i = 0; i < global_srtd_flt_amount; i++) {
+		flt = global_srtd_flt_list[i];
+		printf("%s %s %02d-%02d-%d %02d:%02d\n",
+			flt.code, flt.origin, flt.dep_date.d, flt.dep_date.mth,
+		 	flt.dep_date.y, flt.dep_date.h, flt.dep_date.min);
 	}
-	printf("%s %s %02d-%02d-%d %02d:%02d\n",
-		flt.code, id, dep_dt.d, dep_dt.mth,
-		dep_dt.y, dep_dt.h, dep_dt.min);
 }
 
 int invalid_flt_code(char cd[]) {
 	int i = 3;
+
 	if (!isupper(cd[0]) || !isupper(cd[1]) || cd[2] > '9' || cd[2] < '1') {
 		return TRUE;
 	}
@@ -97,13 +102,16 @@ int invalid_flt_code(char cd[]) {
 
 int invalid_duration(int hours, int mins) {
 	int max_d = MAX_FLT_DURATION;
+
 	return (hours > max_d || (hours == max_d && mins));
 }
 
 int get_flts_departing(char id[]) {
 	int i;
 	flight flight;
+
 	global_srtd_flt_amount = 0; /* resets counter */
+
 	for (i = 0; i < global_flight_amount; i++) {
 		flight = global_flt_list[i];
 		if (!strcmp(flight.origin, id)) {
@@ -116,10 +124,13 @@ int get_flts_departing(char id[]) {
 void get_flts_arriving(char id[]) {
 	int i;
 	flight flight;
+
 	global_srtd_flt_amount = 0; /* resets counter */
+
 	for (i = 0; i < global_flight_amount; i++) {
 		flight = global_flt_list[i];
 		if (!strcmp(flight.destin, id)) {
+			/* changes flight date to its arrival date */
 			flight.dep_date = get_date_arrival(flight);
 			global_srtd_flt_list[global_srtd_flt_amount++] = flight;
 		}
@@ -128,6 +139,7 @@ void get_flts_arriving(char id[]) {
 
 timestamp get_date_arrival(flight flt) {
 	int unix1, unix2;
+
 	unix1 = get_unix_time(flt.dep_date);
 	unix2 = flt.dura.h * 60 + flt.dura.min;
 	return unix_to_regular(unix1 + unix2);
@@ -137,6 +149,7 @@ void sort_flights() {
 	timestamp d;
 	flight temp;
 	int i, j;
+
 	for (i = 1; i < global_srtd_flt_amount; i++) {
 		d = global_srtd_flt_list[i].dep_date;
 		j = i;

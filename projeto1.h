@@ -7,8 +7,6 @@
 #define AP_CITY_LENGTH 51
 #define FLIGHT_CODE_LENGTH 7
 #define MAX_AP 40
-#define AIRPORTS 1
-#define FLIGHTS 0
 #define MAX_FLT 30000
 #define MAX_FLT_DURATION 12
 #define MAX_CAP 100
@@ -48,7 +46,6 @@ extern flight global_srtd_flt_list[];
 extern int global_srtd_flt_amount;
 extern int global_flight_amount;
 extern timestamp global_date;
-/* extern char global_ap_id_list[][AP_ID_LENGTH]; */
 
 
 /* PROTOTYPES */
@@ -63,18 +60,19 @@ void exec_t();
 int isupper_str(char[]);
 /*airports*/
 void add_airport(char[], char[], char[]);
+int invalid_ap_args(char[]);
 airport find_airport(char[]);
 void print_ap_info(airport);
-void sort_airports();
+void list_airports();
 int is_airport(char[]);
+void sort_airports();
 /*flights*/
 int invalid_flt_args(flight, timestamp);
 void add_flight(flight, timestamp);
 int is_flight(char[], timestamp);
 void list_flights();
-void list_srtd_flights(int);
-void print_flt_info(flight);
-void print_srtd_flt_info(flight, int);
+void list_departing_flights();
+void list_arriving_flights();
 int invalid_flt_code(char[]);
 int invalid_duration(int, int);
 int get_flts_departing(char[]);

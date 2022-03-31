@@ -2,8 +2,6 @@
 #include "projeto1.h"
 #include <string.h>
 
-int aps_sorted;
-
 int main(){
 	while (command_listener(getchar())) {}
 	return 0;
@@ -37,26 +35,23 @@ int command_listener(char command) {
 
 void exec_a() {
 	char id[AP_ID_LENGTH], country[AP_COUNTRY_LENGTH], city[AP_CITY_LENGTH];
+
 	scanf("%s %s %[^\n]", id, country, city);
-	if (!isupper_str(id)) {
-		printf("invalid airport ID\n");
-	} else if (global_airport_amount >= MAX_AP) {
-		printf("too many airports\n");
-	} else if (is_airport(id)) {
-		printf("duplicate airport\n");
-	} else {
-		add_airport(id, country, city);
-		printf("airport %s\n", id);
-		aps_sorted = FALSE;
+
+	if (invalid_ap_args(id)) {
+		return;
 	}
+	add_airport(id, country, city);
+	printf("airport %s\n", id);
 }
 
 void exec_l() {
 	char c = getchar(), id[AP_ID_LENGTH];
-	int i;
+
 	if (c == ' ') {
 		while (c != '\n' && c != EOF) {
 			fgets(id, AP_ID_LENGTH, stdin);
+
 			if (!is_airport(id)) {
 				printf("%s: no such airport ID\n", id);	
 			} else {
@@ -65,13 +60,8 @@ void exec_l() {
 			c = getchar();
 		}
 	} else {
-		if (!aps_sorted) {   /* checks if airport array is already sorted */
-			sort_airports();
-			aps_sorted = TRUE;
-		}
-		for (i = 0; i < global_airport_amount; i++) {
-			print_ap_info(global_airport_list[i]);
-		}
+		sort_airports();
+		list_airports();
 	}
 }
 
@@ -79,6 +69,7 @@ void exec_v() {
 	char c = getchar();
 	flight new_f;
 	timestamp dep_dt;
+
 	if (c == ' ') { /* checks if there are more arguments */
 		scanf("%s %s %s %d-%d-%d %d:%d %d:%d %d",
 			new_f.code, new_f.origin, new_f.destin, &dep_dt.d,
@@ -87,9 +78,8 @@ void exec_v() {
 
 		if (invalid_flt_args(new_f, dep_dt)) {
 			return;
-		} else {
-			add_flight(new_f, dep_dt);
 		}
+		add_flight(new_f, dep_dt);
 	} else {
 		list_flights();
 	}
@@ -98,32 +88,37 @@ void exec_v() {
 void exec_p() {
 	char id[AP_ID_LENGTH];
 	scanf("%s", id);
+
 	if (!is_airport(id)) {
 		printf("%s: no such airport ID\n", id);	
 		return;
 	}
 	get_flts_departing(id);
 	sort_flights();
-	list_srtd_flights(DEPARTING);
+	list_departing_flights();
 }
 
 void exec_c() {
 	char id[AP_ID_LENGTH];
 	scanf("%s", id);
+
 	if (!is_airport(id)) {
 		printf("%s: no such airport ID\n", id);
 		return;
 	}
 	get_flts_arriving(id);
 	sort_flights();
-	list_srtd_flights(ARRIVING);
+	list_arriving_flights();
 }
 
 void exec_t() {
 	timestamp new_date;
+
 	scanf("%d-%d-%d", &new_date.d, &new_date.mth, &new_date.y);
+
 	new_date.h = 0;  /* initialize hour and min */
 	new_date.min = 0;
+
 	if (invalid_date(new_date)) {
 		printf("invalid date\n");
 		return;
@@ -136,6 +131,7 @@ void exec_t() {
 int isupper_str(char str[]) {
 	char c;
 	int i, len = strlen(str);
+
 	for (i = 0; i < len; i++) {
 		c = str[i];
 		if (c < 'A' || c > 'Z') {

@@ -5,9 +5,9 @@
 int global_airport_amount = 0;
 airport global_airport_list[MAX_AP];
 
-/*maybe mudar e meter tudo como os flights */
 void add_airport(char id[], char country[], char city[]) {
 	airport new_airport;
+
 	strcpy(new_airport.id, id);
 	strcpy(new_airport.country, country);
 	strcpy(new_airport.city, city);
@@ -15,9 +15,23 @@ void add_airport(char id[], char country[], char city[]) {
 	global_airport_list[global_airport_amount++] = new_airport;
 }
 
+int invalid_ap_args(char id[]) {
+	if (!isupper_str(id)) {
+		printf("invalid airport ID\n");
+	} else if (global_airport_amount >= MAX_AP) {
+		printf("too many airports\n");
+	} else if (is_airport(id)) {
+		printf("duplicate airport\n");
+	} else {
+		return FALSE;
+	}
+	return TRUE;
+}
+
 airport find_airport(char id[]) {
 	int i;
 	airport ap;
+
 	for (i = 0; i < global_airport_amount; i++) {
 		ap = global_airport_list[i];
 		if (!strcmp(ap.id, id)) {
@@ -32,8 +46,16 @@ void print_ap_info(airport ap) {
 	printf("%s %s %s %d\n", ap.id, ap.city, ap.country, n_f);
 }
 
+void list_airports() {
+	int i;
+	for (i = 0; i < global_airport_amount; i++) {
+		print_ap_info(global_airport_list[i]);
+	}
+}
+
 int is_airport(char str[]) {
 	int i;
+
 	for (i = 0; i < global_airport_amount; i++) {
 		if (!strcmp(global_airport_list[i].id, str)) {
 			return TRUE;
@@ -46,6 +68,7 @@ void sort_airports() {
 	char id1[AP_ID_LENGTH];
 	airport temp;
 	int i, j;
+
 	for (i = 1; i < global_airport_amount; i++) {
 		strcpy(id1, global_airport_list[i].id);
 		j = i;
