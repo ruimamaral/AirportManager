@@ -1,18 +1,47 @@
+/*
+ * flights.c
+ *
+ * Rui Amaral - ist1103155
+ *
+ * File containing everything used in order to manage and 
+ * keep track of flights.
+ *
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include "projeto1.h"
 
+/* Tracks the global amount of flights */
 int global_flight_amount = 0;
+
+/* Tracks the amount of flights that were sorted */
 int global_srtd_flt_amount = 0;
+
+/* Array containing every flight */
 flight global_flt_list[MAX_FLT];
+
+/* 
+ * Auxiliary array of flights that stores flights departing/arriving
+ * to a given airport as part of the execution of 'c' and 'p' commands.
+ */
 flight global_srtd_flt_list[MAX_FLT];
 
+/*
+ * Adds a flight to the global array of flights.
+ */
 void add_flight(flight flight, timestamp dep_date) {
 	flight.dep_date = dep_date;
 	global_flt_list[global_flight_amount++] = flight;
 }
 
+/*
+ * Checks if the program should add a given flight to the system.
+ * Returns 0 if all requirements for the addition of the flight
+ * are met. Returns 0 otherwise and prints out error messages
+ * notifying the user of the error.
+ */
 int invalid_flt_args(flight new_f, timestamp dep_dt) {
 	if (invalid_flt_code(new_f.code)) {
 		printf("invalid flight code\n");
@@ -35,7 +64,13 @@ int invalid_flt_args(flight new_f, timestamp dep_dt) {
 	} 
 	return TRUE;
 }
-  
+ 
+/*
+ * Receives a flight code from a new flight and
+ * Returns 1 if there is an already existing flight in the system
+ * with that code, on the same day as the new flight.
+ * Returns 0 otherwise.
+ */
 int is_flight(char str[], timestamp dt) {
 	int i;
 	flight flt;
@@ -49,6 +84,9 @@ int is_flight(char str[], timestamp dt) {
 	return FALSE;
 }
 
+/*
+ * Prints out relevant info for every flight currently in the global array.
+ */
 void list_flights() {
 	int i;
 	flight flt;
@@ -62,6 +100,10 @@ void list_flights() {
 	}
 }
 
+/*
+ * Prints out info for every flight in the auxiliary flight array, excluding
+ * the airport of origin.
+ */
 void list_departing_flights() {
 	int i;
 	flight flt;
@@ -74,6 +116,10 @@ void list_departing_flights() {
 	}
 }
 
+/*
+ * Prints out info for every flight in the auxiliary flight array, excluding
+ * the airport from where they departed.
+ */
 void list_arriving_flights() {
 	int i;
 	flight flt;
@@ -86,6 +132,9 @@ void list_arriving_flights() {
 	}
 }
 
+/*
+ * Returns 1 if the flight code received is not valid, returns 0 otherwise.
+ */
 int invalid_flt_code(char cd[]) {
 	int i = 3;
 
@@ -100,12 +149,19 @@ int invalid_flt_code(char cd[]) {
 	return FALSE;
 }
 
+/*
+ * Returns 1 if the duration entered exceeds the maximum duration allowed.
+ */
 int invalid_duration(int hours, int mins) {
 	int max_d = MAX_FLT_DURATION;
 
 	return (hours > max_d || (hours == max_d && mins));
 }
 
+/*
+ * Fills up auxiliary array of flights with every flight departing from
+ * the airport represented by the id received.
+ */
 int get_flts_departing(char id[]) {
 	int i;
 	flight flight;
@@ -121,6 +177,11 @@ int get_flts_departing(char id[]) {
 	return global_srtd_flt_amount;
 }
 
+
+/*
+ * Fills up auxiliary array of flights with every flight arriving at
+ * the airport represented by the id received.
+ */
 void get_flts_arriving(char id[]) {
 	int i;
 	flight flight;
@@ -130,13 +191,18 @@ void get_flts_arriving(char id[]) {
 	for (i = 0; i < global_flight_amount; i++) {
 		flight = global_flt_list[i];
 		if (!strcmp(flight.destin, id)) {
-			/* changes flight date to its arrival date */
+			/* changes flight date to its arrival date
+			 *  in preparation for the sorting*/
 			flight.dep_date = get_date_arrival(flight);
 			global_srtd_flt_list[global_srtd_flt_amount++] = flight;
 		}
 	}
 }
 
+/*
+ * Receives the date of departure and duration of a flight and returns
+ * a timestamp of the time of arrival.
+ */
 timestamp get_date_arrival(flight flt) {
 	int unix1, unix2;
 
@@ -145,6 +211,9 @@ timestamp get_date_arrival(flight flt) {
 	return unix_to_regular(unix1 + unix2);
 }
 
+/*
+ * Sorts auxiliary array of flights from oldest to most recent.
+ */
 void sort_flights() {
 	timestamp d;
 	flight temp;

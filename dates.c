@@ -1,9 +1,23 @@
+/*
+ * dates.c
+ *
+ * Rui Amaral - ist1103155
+ *
+ * File containing functions that are used to manage the time system.
+ *
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include "projeto1.h"
 
+/* Universal system date */
 timestamp global_date = {2022, 1, 1, 0, 0};
 
+/*
+ * Turns a date in a timestamp format into a unix-like format.
+ * Returns an integer corresponding to the minute sum.
+ */
 int get_unix_time(timestamp ts) {
 	int yr = ts.y, mth = ts.mth, days = ts.d, hrs = ts.h, mins = ts.min;
 	int min_sum = yr * MINS_IN_YEAR + get_month_mins(mth - 1);
@@ -11,6 +25,10 @@ int get_unix_time(timestamp ts) {
 	return min_sum;
 }
 
+/*
+ * Returns the sum of the minutes of the months since the start of the year
+ * until the month corresponding to the integer received.
+ */
 int get_month_mins(int month) {
 	static const int days_in_month[] = {
 		31, 28, 31, 30,
@@ -24,6 +42,9 @@ int get_month_mins(int month) {
 	return min_sum;
 }
 
+/*
+ * Converts a minute sum into a regular date, returning it as a timestamp.
+ */
 timestamp unix_to_regular(int min_sum) {
 	timestamp ts;
 	int mth, mth_mins;
@@ -40,6 +61,10 @@ timestamp unix_to_regular(int min_sum) {
 	return ts;
 }
 
+/*
+ * Checks if the date received is invalid.
+ * Returns 1 if so, 0 otherwise.
+ */
 int invalid_date(timestamp ts) {
 	timestamp gl_date_plus_1year = global_date;
 	int is_past = datecmp(ts, global_date) < 0;
@@ -49,10 +74,18 @@ int invalid_date(timestamp ts) {
 	return (is_past || datecmp(ts, gl_date_plus_1year) > 0);
 }
 
+/*
+ * Checks whether the dates received share the same day, month and year.
+ * Returns 1 if so, 0 otherwise.
+ */
 int same_day(timestamp ts1, timestamp ts2) {
 	return (ts1.y == ts2.y && ts1.mth == ts2.mth && ts1.d == ts2.d);
 }
 
+/*
+ * Compares two dates, returning < 0 if the first date is before the second,
+ * < 0 if the first date is after the second one and 0, if they are equal.
+ */
 int datecmp(timestamp date1, timestamp date2) {
 	int unix1, unix2;
 	unix1 = get_unix_time(date1);

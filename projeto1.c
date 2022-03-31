@@ -1,3 +1,12 @@
+/*
+ * projeto1.c
+ *
+ * Rui Amaral - ist1103155
+ *
+ * File containing main() and other primary functions for the program.
+ * 
+ */
+
 #include <stdio.h>
 #include "projeto1.h"
 #include <string.h>
@@ -7,6 +16,9 @@ int main(){
 	return 0;
 }
 
+/*
+ * Listens for commands entered by the user until it receives the 'q' command.
+ */
 int command_listener(char command) {
 	switch (command) {
 		case 'q':
@@ -33,6 +45,10 @@ int command_listener(char command) {
 	return 1;
 }
 
+/*
+ * Handles the 'a' command.
+ * Adds a new airport to the system.
+ */
 void exec_a() {
 	char id[AP_ID_LENGTH], country[AP_COUNTRY_LENGTH], city[AP_CITY_LENGTH];
 
@@ -45,6 +61,11 @@ void exec_a() {
 	printf("airport %s\n", id);
 }
 
+/*
+ * Handles the 'l' command.
+ * Fetches and lists info about given airports.
+ * With no arguments prints info of every airport in the system.
+ */
 void exec_l() {
 	char c = getchar(), id[AP_ID_LENGTH];
 
@@ -65,6 +86,11 @@ void exec_l() {
 	}
 }
 
+/*
+ * Handles the 'v' command.
+ * Adds a flight to the system, or lists every flight
+ * if no arguments are given.
+ */
 void exec_v() {
 	char c = getchar();
 	flight new_f;
@@ -85,6 +111,11 @@ void exec_v() {
 	}
 }
 
+/*
+ * Handles the 'p' command.
+ * Lists every flight departing from a given airport sorted
+ * from oldest to most recent.
+ */
 void exec_p() {
 	char id[AP_ID_LENGTH];
 	scanf("%s", id);
@@ -98,6 +129,11 @@ void exec_p() {
 	list_departing_flights();
 }
 
+/*
+ * Handles the 'c' command.
+ * Lists every flight arriving at a given airport, sorted
+ * from oldest to most recent.
+ */
 void exec_c() {
 	char id[AP_ID_LENGTH];
 	scanf("%s", id);
@@ -111,6 +147,10 @@ void exec_c() {
 	list_arriving_flights();
 }
 
+/*
+ * Handles the 't' command.
+ * Updates the system date.
+ */
 void exec_t() {
 	timestamp new_date;
 
@@ -128,6 +168,10 @@ void exec_t() {
 	return;
 }
 
+/*
+ * Auxiliary function that returns 1 if all characters the string received
+ * are part of the uppercase alphabet.
+ */
 int isupper_str(char str[]) {
 	char c;
 	int i, len = strlen(str);

@@ -1,10 +1,23 @@
+/*
+ * airports.c
+ *
+ * Rui Amaral - ist1103155
+ *
+ * File containing everything used in order to manage airports.
+ * 
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include "projeto1.h"
 
+/* Tracks the global amount of airports */
 int global_airport_amount = 0;
+
+/* Array that stores all the airports in the system */
 airport global_airport_list[MAX_AP];
 
+/* Adds an aiport to the global array */
 void add_airport(char id[], char country[], char city[]) {
 	airport new_airport;
 
@@ -15,6 +28,10 @@ void add_airport(char id[], char country[], char city[]) {
 	global_airport_list[global_airport_amount++] = new_airport;
 }
 
+/*
+ * Checks if the system should add a new airport.
+ * Returns 1 if it meets all the requirements and 0 if otherwise.
+ */
 int invalid_ap_args(char id[]) {
 	if (!isupper_str(id)) {
 		printf("invalid airport ID\n");
@@ -28,6 +45,9 @@ int invalid_ap_args(char id[]) {
 	return TRUE;
 }
 
+/*
+ * Receives an airport id, finds that airport in the array and returns it.
+ */
 airport find_airport(char id[]) {
 	int i;
 	airport ap;
@@ -41,11 +61,18 @@ airport find_airport(char id[]) {
 	return ap;
 }
 
+/*
+ * Receives an airport id and prints relevant info about
+ * that specific airport.
+ */
 void print_ap_info(airport ap) {
 	int n_f = get_flts_departing(ap.id);
 	printf("%s %s %s %d\n", ap.id, ap.city, ap.country, n_f);
 }
 
+/*
+ * Prints relevant info of all the airports currently in the system.
+ */
 void list_airports() {
 	int i;
 	for (i = 0; i < global_airport_amount; i++) {
@@ -53,6 +80,10 @@ void list_airports() {
 	}
 }
 
+/*
+ * Receives an aiport id and returns 1 if there currently is
+ * an airport with that id in the system. Returns 0 otherwise.
+ */
 int is_airport(char str[]) {
 	int i;
 
@@ -64,6 +95,9 @@ int is_airport(char str[]) {
 	return FALSE;
 }
 
+/*
+ * Sorts global list of airports by their id, in alphabetical order.
+ */
 void sort_airports() {
 	char id1[AP_ID_LENGTH];
 	airport temp;

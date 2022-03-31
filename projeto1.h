@@ -1,3 +1,12 @@
+/*
+ * projeto1.h
+ *
+ * Rui Amaral - ist1103155
+ *
+ * Header file for the program.
+ *
+ */
+
 #include <stdio.h>
 
 #define TRUE 1
@@ -41,7 +50,6 @@ typedef struct {
 
 extern timestamp global_date;
 
-
 /* PROTOTYPES */
 
 int command_listener(char);
@@ -52,7 +60,9 @@ void exec_p();
 void exec_c();
 void exec_t();
 int isupper_str(char[]);
-/*airports*/
+
+/* airports */
+
 void add_airport(char[], char[], char[]);
 int invalid_ap_args(char[]);
 airport find_airport(char[]);
@@ -60,7 +70,9 @@ void print_ap_info(airport);
 void list_airports();
 int is_airport(char[]);
 void sort_airports();
-/*flights*/
+
+/* flights */
+
 int invalid_flt_args(flight, timestamp);
 void add_flight(flight, timestamp);
 int is_flight(char[], timestamp);
@@ -73,7 +85,9 @@ int get_flts_departing(char[]);
 void get_flts_arriving(char[]);
 timestamp get_date_arrival(flight);
 void sort_flights();
-/*dates*/
+
+/* dates */
+
 int get_unix_time(timestamp);
 int get_month_mins(int);
 timestamp unix_to_regular(int);
