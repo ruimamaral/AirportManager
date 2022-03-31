@@ -39,12 +39,6 @@ typedef struct {
 	int cap;
 } flight;
 
-extern int global_airport_amount;
-extern airport global_airport_list[];
-extern flight global_flt_list[];
-extern flight global_srtd_flt_list[];
-extern int global_srtd_flt_amount;
-extern int global_flight_amount;
 extern timestamp global_date;
 
 
