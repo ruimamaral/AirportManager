@@ -7,8 +7,6 @@
  *
  */
 
-#include <stdio.h>
-
 #define TRUE 1
 #define FALSE 0
 #define AP_ID_LENGTH 4
