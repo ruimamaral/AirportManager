@@ -21,6 +21,7 @@ timestamp global_date = {2022, 1, 1, 0, 0};
 int get_unix_time(timestamp ts) {
 	int yr = ts.y, mth = ts.mth, days = ts.d, hrs = ts.h, mins = ts.min;
 	int min_sum = yr * MINS_IN_YEAR + get_month_mins(mth - 1);
+
 	min_sum += (days - 1) * MINS_IN_DAY + hrs * 60 + mins;
 	return min_sum;
 }
@@ -30,12 +31,15 @@ int get_unix_time(timestamp ts) {
  * until the month corresponding to the integer received.
  */
 int get_month_mins(int month) {
+	/* Array containing the amout of days per
+	 * month from january to december */
 	static const int days_in_month[] = {
 		31, 28, 31, 30,
 		31, 30, 31, 31,
 		30, 31, 30, 31
 	};
 	int i, min_sum = 0;
+
 	for (i = 0; i < month; i++) {
 		min_sum += days_in_month[i] * MINS_IN_DAY;
 	}
@@ -48,15 +52,22 @@ int get_month_mins(int month) {
 timestamp unix_to_regular(int min_sum) {
 	timestamp ts;
 	int mth, mth_mins;
+
 	ts.y = min_sum / (MINS_IN_YEAR);
 	min_sum -= ts.y * MINS_IN_YEAR;
+
 	mth_mins = get_month_mins(1);
+	/* Gets the month number */
 	for (mth = 1; min_sum - mth_mins >= 0; mth_mins = get_month_mins(++mth)) {}
+
 	min_sum -= get_month_mins(mth - 1);
 	ts.mth = mth;
+
 	ts.d = min_sum / MINS_IN_DAY + 1;
 	min_sum -= (ts.d - 1) * MINS_IN_DAY;
+
 	ts.h = min_sum / 60;
+
 	ts.min = min_sum % 60;
 	return ts;
 }
@@ -68,9 +79,11 @@ timestamp unix_to_regular(int min_sum) {
 int invalid_date(timestamp ts) {
 	timestamp gl_date_plus_1year = global_date;
 	int is_past = datecmp(ts, global_date) < 0;
+
 	gl_date_plus_1year.y += 1;
 	gl_date_plus_1year.h = 23;
 	gl_date_plus_1year.min = 59;
+
 	return (is_past || datecmp(ts, gl_date_plus_1year) > 0);
 }
 
@@ -88,8 +101,10 @@ int same_day(timestamp ts1, timestamp ts2) {
  */
 int datecmp(timestamp date1, timestamp date2) {
 	int unix1, unix2;
+
 	unix1 = get_unix_time(date1);
 	unix2 = get_unix_time(date2);
+
 	if (unix1 > unix2) {
 		return 1;
 	} else if (unix1 == unix2) {
