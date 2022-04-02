@@ -7,9 +7,9 @@
  * 
  */
 
+#include "projeto1.h"
 #include <stdio.h>
 #include <string.h>
-#include "projeto1.h"
 
 /* Tracks the global amount of airports */
 int global_airport_amount = 0;
@@ -17,7 +17,10 @@ int global_airport_amount = 0;
 /* Array that stores all the airports in the system */
 airport global_airport_list[MAX_AP];
 
-/* Adds an aiport to the global array */
+
+/*
+ * Adds an aiport to the global array.
+ */
 void add_airport(char id[], char country[], char city[]) {
 	airport new_airport;
 
@@ -46,7 +49,8 @@ int invalid_ap_args(char id[]) {
 }
 
 /*
- * Receives an airport id, finds that airport in the array and returns it.
+ * Receives an airport id, finds that airport in the array
+ * and returns it.
  */
 airport find_airport(char id[]) {
 	int i;
@@ -97,6 +101,7 @@ int is_airport(char str[]) {
 
 /*
  * Sorts global list of airports by their id, in alphabetical order.
+ * Insertion sort.
  */
 void sort_airports() {
 	char id1[AP_ID_LENGTH];

@@ -20,8 +20,6 @@
 #define MIN_CAP 10
 #define MINS_IN_YEAR 525600
 #define MINS_IN_DAY 1440
-#define ARRIVING 1
-#define DEPARTING 0
 
 typedef struct {
 	char id[AP_ID_LENGTH];
@@ -46,9 +44,13 @@ typedef struct {
 	int cap;
 } flight;
 
+
 extern timestamp global_date;
 
+
 /* PROTOTYPES */
+
+/* projeto1.c */
 
 int command_listener(char);
 void exec_l();
@@ -59,7 +61,7 @@ void exec_c();
 void exec_t();
 int isupper_str(char[]);
 
-/* airports */
+/* airports.c */
 
 void add_airport(char[], char[], char[]);
 int invalid_ap_args(char[]);
@@ -69,7 +71,7 @@ void list_airports();
 int is_airport(char[]);
 void sort_airports();
 
-/* flights */
+/* flights.c */
 
 int invalid_flt_args(flight, timestamp);
 void add_flight(flight, timestamp);
@@ -84,7 +86,7 @@ void get_flts_arriving(char[]);
 timestamp get_date_arrival(flight);
 void sort_flights();
 
-/* dates */
+/* dates.c */
 
 int get_unix_time(timestamp);
 int get_month_mins(int);

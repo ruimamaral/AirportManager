@@ -7,9 +7,10 @@
  * 
  */
 
-#include <stdio.h>
 #include "projeto1.h"
+#include <stdio.h>
 #include <string.h>
+
 
 int main(){
 	while (command_listener(getchar())) {}
@@ -172,6 +173,7 @@ void exec_t() {
 /*
  * Auxiliary function that receives a string and returns 1 if
  * all characters in the string are part of the uppercase alphabet.
+ * Returns 0 otherwise.
  */
 int isupper_str(char str[]) {
 	char c;

@@ -8,10 +8,10 @@
  *
  */
 
+#include "projeto1.h"
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include "projeto1.h"
 
 /* Tracks the global amount of flights */
 int global_flight_amount = 0;
@@ -21,6 +21,7 @@ int global_srtd_flt_amount = 0;
 
 /* Array containing every flight */
 flight global_flt_list[MAX_FLT];
+
 
 /* 
  * Auxiliary array of flights that stores flights departing/arriving
@@ -39,7 +40,7 @@ void add_flight(flight flight, timestamp dep_date) {
 /*
  * Checks if the program should add a given flight to the system.
  * Returns 0 if all requirements for the addition of the flight
- * are met. Returns 0 otherwise and prints out error messages
+ * are met. Returns 0 otherwise, and prints out error messages
  * notifying the user of the error.
  */
 int invalid_flt_args(flight new_f, timestamp dep_dt) {
@@ -66,8 +67,8 @@ int invalid_flt_args(flight new_f, timestamp dep_dt) {
 }
  
 /*
- * Receives a flight code from a new flight and
- * Returns 1 if there is an already existing flight in the system
+ * Receives a flight code from a new flight and returns 1
+ * if there is an already existing flight in the system
  * with that code, on the same day as the new flight.
  * Returns 0 otherwise.
  */
@@ -85,7 +86,8 @@ int is_flight(char str[], timestamp dt) {
 }
 
 /*
- * Prints out relevant info for every flight currently in the global array.
+ * Prints out relevant info for every flight currently in the
+ * global array.
  */
 void list_flights() {
 	int i;
@@ -101,8 +103,8 @@ void list_flights() {
 }
 
 /*
- * Prints out info for every flight in the auxiliary flight array, excluding
- * the airport of origin.
+ * Prints out info for every flight in the auxiliary flight array,
+ * excluding the airport of origin.
  */
 void list_departing_flights() {
 	int i;
@@ -117,8 +119,8 @@ void list_departing_flights() {
 }
 
 /*
- * Prints out info for every flight in the auxiliary flight array, excluding
- * the airport from where they departed.
+ * Prints out info for every flight in the auxiliary flight array,
+ * excluding the airport from where they departed.
  */
 void list_arriving_flights() {
 	int i;
@@ -133,7 +135,8 @@ void list_arriving_flights() {
 }
 
 /*
- * Returns 1 if the flight code received is not valid, returns 0 otherwise.
+ * Returns 1 if the flight code received is not valid.
+ * Returns 0 otherwise.
  */
 int invalid_flt_code(char cd[]) {
 	int i = 3;
@@ -150,7 +153,8 @@ int invalid_flt_code(char cd[]) {
 }
 
 /*
- * Returns 1 if the duration entered exceeds the maximum duration allowed.
+ * Returns 1 if the duration entered exceeds the maximum
+ * duration allowed and 0 if it doesn't.
  */
 int invalid_duration(int hours, int mins) {
 	int max_d = MAX_FLT_DURATION;
@@ -159,8 +163,8 @@ int invalid_duration(int hours, int mins) {
 }
 
 /*
- * Fills up auxiliary array of flights with every flight departing from
- * the airport represented by the id received.
+ * Fills up auxiliary array of flights with every flight departing
+ * from the airport represented by the id received.
  */
 int get_flts_departing(char id[]) {
 	int i;
@@ -213,6 +217,7 @@ timestamp get_date_arrival(flight flt) {
 
 /*
  * Sorts auxiliary array of flights from oldest to most recent.
+ * Insertion sort.
  */
 void sort_flights() {
 	timestamp d;

@@ -7,12 +7,13 @@
  *
  */
 
+#include "projeto1.h"
 #include <stdio.h>
 #include <string.h>
-#include "projeto1.h"
 
 /* Universal system date */
 timestamp global_date = {2022, 1, 1, 0, 0};
+
 
 /*
  * Turns a date in a timestamp format into a unix-like format.
@@ -27,8 +28,8 @@ int get_unix_time(timestamp ts) {
 }
 
 /*
- * Returns the sum of the minutes of the months since the start of the year
- * until the month corresponding to the integer received.
+ * Returns the sum of the minutes of the months since the start of the
+ * year until the month corresponding to the integer received.
  */
 int get_month_mins(int month) {
 	/* Array containing the amout of days per
@@ -47,7 +48,8 @@ int get_month_mins(int month) {
 }
 
 /*
- * Converts a minute sum into a regular date, returning it as a timestamp.
+ * Converts a minute sum into a regular date, returning it as
+ * a timestamp.
  */
 timestamp unix_to_regular(int min_sum) {
 	timestamp ts;
@@ -79,7 +81,10 @@ timestamp unix_to_regular(int min_sum) {
 int invalid_date(timestamp ts) {
 	timestamp gl_date_plus_1year = global_date;
 	int is_past = datecmp(ts, global_date) < 0;
-
+	
+	/* Gets date on the very end of the current day on the following
+	 * year so that only dates more than a year apart and on different
+	 * days are flagged as invalid */
 	gl_date_plus_1year.y += 1;
 	gl_date_plus_1year.h = 23;
 	gl_date_plus_1year.min = 59;
@@ -96,8 +101,9 @@ int same_day(timestamp ts1, timestamp ts2) {
 }
 
 /*
- * Compares two dates, returning < 0 if the first date is before the second,
- * < 0 if the first date is after the second one and 0, if they are equal.
+ * Compares two dates, returning < 0 if the first date is before
+ * the second, < 0 if the first date is after the second one,
+ * and 0 if they are equal.
  */
 int datecmp(timestamp date1, timestamp date2) {
 	int unix1, unix2;
