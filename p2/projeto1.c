@@ -29,7 +29,7 @@ int command_listener(char command) {
 			exec_a();
 			return 1;
 		case 'l':
-			exec_l();
+			exec_l(); /* change the fucking names to be more explanatory */
 			return 1;
 		case 'v':
 			exec_v();
