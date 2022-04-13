@@ -26,22 +26,22 @@ int command_listener(char command) {
 		case 'q':
 			return 0;
 		case 'a':
-			exec_a();
+			exec_add_airport();
 			return 1;
 		case 'l':
-			exec_l(); /* change the fucking names to be more explanatory */
+			exec_list_airports();
 			return 1;
 		case 'v':
-			exec_v();
+			exec_add_flight();
 			return 1;
 		case 'p':
-			exec_p();
+			exec_list_departing_flts();
 			return 1;
 		case 'c':
-			exec_c();
+			exec_list_arriving_flts();
 			return 1;
 		case 't':
-			exec_t();
+			exec_set_time();
 			return 1;
 	}
 	return 1;
@@ -51,7 +51,7 @@ int command_listener(char command) {
  * Handles the 'a' command.
  * Adds a new airport to the system.
  */
-void exec_a() {
+void exec_add_airport() {
 	char id[AP_ID_LENGTH], country[AP_COUNTRY_LENGTH], city[AP_CITY_LENGTH];
 
 	scanf("%s %s %[^\n]", id, country, city);
@@ -68,8 +68,8 @@ void exec_a() {
  * Fetches and lists info about given airports.
  * With no arguments prints info of every airport in the system.
  */
-void exec_l() {
-	char c = getchar(), id[AP_ID_LENGTH];
+void exec_list_airports() {
+	char c = getchar(), id[AP_IDLENGTH];
 
 	if (c == ' ') {
 		while (c != '\n' && c != EOF) {
@@ -93,7 +93,7 @@ void exec_l() {
  * Adds a flight to the system, or lists every flight
  * if no arguments are given.
  */
-void exec_v() {
+void exec_add_flight() {
 	char c = getchar();
 	flight new_f;
 	timestamp dep_dt;
@@ -118,7 +118,7 @@ void exec_v() {
  * Lists every flight departing from a given airport sorted
  * from oldest to most recent.
  */
-void exec_p() {
+void exec_list_departing_flts() {
 	char id[AP_ID_LENGTH];
 	scanf("%s", id);
 
@@ -136,7 +136,7 @@ void exec_p() {
  * Lists every flight arriving at a given airport, sorted
  * from oldest to most recent.
  */
-void exec_c() {
+void exec_list_arriving_flts() {
 	char id[AP_ID_LENGTH];
 	scanf("%s", id);
 
@@ -153,7 +153,7 @@ void exec_c() {
  * Handles the 't' command.
  * Updates the system date.
  */
-void exec_t() {
+void exec_set_time() {
 	timestamp new_date;
 
 	scanf("%d-%d-%d", &new_date.d, &new_date.mth, &new_date.y);
@@ -168,6 +168,18 @@ void exec_t() {
 	global_date = new_date;
 	printf("%02d-%02d-%d\n", global_date.d, global_date.mth, global_date.y);
 	return;
+}
+
+void exec_add_reservation(info global_info) {
+	char flt_code[FLIGHT_CODE_LENGTH], res_code[MAX_CMD_LEN];
+	int day, month, year, pass_n;
+	scanf("%s %d-%d-%d", flt_code, day, month, year);
+	if (getchar() == ' ') {
+		list_reservations(flt_code, day, month, year);
+	} else {
+		scanf("%s%d", res_code, pass_n);
+		add_reservation(flt_code, day, month, year, res_code, pass_n);
+	}
 }
 
 /*
@@ -188,3 +200,11 @@ int isupper_str(char str[]) {
 	return TRUE;
 }
 
+void *my_alloc(unsigned size) {
+	void *ptr = malloc(size);
+	if (!ptr) {
+		printf("No memory.");
+		exit(1);
+	}
+	return ptr;
+}

@@ -72,17 +72,17 @@ int invalid_flt_args(flight new_f, timestamp dep_dt) {
  * with that code, on the same day as the new flight.
  * Returns 0 otherwise.
  */
-int is_flight(char str[], timestamp dt) {
+flight *get_flight(char str[], timestamp dt) {
 	int i;
-	flight flt;
+	flight flt, *ptr = NULL;
 
 	for (i = 0; i < global_flight_amount; i++) {
 		flt = global_flt_list[i];
 		if (!strcmp(flt.code, str) && same_day(flt.dep_date, dt)) {
-			return TRUE;
+			ptr = &flt;
 		}
 	}
-	return FALSE;
+	return ptr;
 }
 
 /*

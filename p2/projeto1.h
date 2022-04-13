@@ -20,6 +20,7 @@
 #define MIN_CAP 10
 #define MINS_IN_YEAR 525600
 #define MINS_IN_DAY 1440
+#define MAX_CMD_LEN 65536
 
 typedef struct {
 	char id[AP_ID_LENGTH];
@@ -44,6 +45,22 @@ typedef struct {
 	int cap;
 } flight;
 
+typedef struct flt_node {
+	struct flt_node *next;
+	flight flt;
+} flt_node;
+
+typedef struct node *flt_ln;
+
+typedef struct {
+	char *code;
+	flight *flt;
+	int pass_n;
+} reservation;
+
+typedef struct {
+	int res_amount;
+} info;
 
 extern timestamp global_date;
 
@@ -53,12 +70,12 @@ extern timestamp global_date;
 /* projeto1.c */
 
 int command_listener(char);
-void exec_l();
-void exec_a();
-void exec_v();
-void exec_p();
-void exec_c();
-void exec_t();
+void exec_add_airport();
+void exec_list_airports();
+void exec_add_flight();
+void exec_list_departing_flts();
+void exec_list_arriving_flts();
+void exec_set_time();
 int isupper_str(char[]);
 
 /* airports.c */
@@ -75,7 +92,7 @@ void sort_airports();
 
 int invalid_flt_args(flight, timestamp);
 void add_flight(flight, timestamp);
-int is_flight(char[], timestamp);
+flight *get_flight(char[], timestamp);
 void list_flights();
 void list_departing_flights();
 void list_arriving_flights();
