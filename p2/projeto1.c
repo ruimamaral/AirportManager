@@ -167,18 +167,21 @@ void exec_set_time() {
 	}
 	global_date = new_date;
 	printf("%02d-%02d-%d\n", global_date.d, global_date.mth, global_date.y);
-	return;
 }
 
 void exec_add_reservation(info global_info) {
 	char flt_code[FLIGHT_CODE_LENGTH], res_code[MAX_CMD_LEN];
-	int day, month, year, pass_n;
+	int day, month, year, pass_n, error;
+
 	scanf("%s %d-%d-%d", flt_code, day, month, year);
 	if (getchar() == ' ') {
-		list_reservations(flt_code, day, month, year);
+		error = list_reservations(flt_code, day, month, year);
 	} else {
-		scanf("%s%d", res_code, pass_n);
-		add_reservation(flt_code, day, month, year, res_code, pass_n);
+		scanf("%s%ld", res_code, pass_n);
+		error = add_reservation(flt_code, day, month, year, res_code, pass_n);
+	}
+	if (error) {
+		print_res_error(error, flt_code, res_code);
 	}
 }
 

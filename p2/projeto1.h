@@ -43,6 +43,7 @@ typedef struct {
 	timestamp dep_date;
 	timestamp dura;
 	int cap;
+	int pass_n;
 } flight;
 
 typedef struct flt_node {
@@ -54,7 +55,7 @@ typedef struct node *flt_ln;
 
 typedef struct {
 	char *code;
-	flight *flt;
+	char flt[FLIGHT_CODE_LENGTH];
 	int pass_n;
 } reservation;
 
