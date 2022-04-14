@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-int add_reservation(char flt_code[], int d,
+int add_reservation(info *global_info, char flt_code[], int d,
 					int m, int y, char temp_res_code[], int pass_n) {
 	int len;
 	timestamp date = {y, m, d, 0, 0};
@@ -24,10 +24,34 @@ int add_reservation(char flt_code[], int d,
 	} else if (pass_n < 1) {
 		return -6;
 	}
-	final_res_code = my_alloc(len + 1);
+	final_res_code = (char*) my_alloc(len + 1);
 	strcpy(final_res_code, temp_res_code); /*ver se vem com o \0 */
 	res = create_res(final_res_code, flt_code, pass_n);
-	res_to_hashtable(res);
+	res_to_hashtable(global_info->hashtable, res);
+	return 0;
+}
+
+int list_reservations(char flt_code[], int d, int m, int y) {
+	/* maybe utilizar capacidade do voo para ver se as reservas ja foram
+	 * todas encontradas (maybe por pointer para voo em cada reserva para n ter de procurar o voo) */
+	timestamp date = {y, m, d, 0, 0};
+	int res_n;
+	reservation **res_array;
+
+	if (!get_flight(flt_code)) {
+		return -2;
+	} else if (invalid_date(date)) {
+		return -5;
+	}
+	res_n = get_flight(flt_code)->res_n;
+	res_array = (reservation**) my_alloc(sizeof(reservation*) * res_n);
+	quicksort();
+	for (i = 0; i < res_n; i++) {
+		printf("%s %d\n", res_array[i]->code, res_array[i]->pass_n);
+	}
+
+	free(res_array);
+	return 0;
 }
 
 reservation *create_res(char code[], char flt[], int pass_n) {
@@ -63,4 +87,18 @@ int check_res_code(char code[]) {
 		}
 	}
 	return i;
+}
+
+res_ht *init_ht(int size) {
+	res_ht *hashtable = (res_ht*) my_alloc(sizeof(res_ht));
+
+	hashtable->size = size;
+	hashtable->table = (reservation**) my_alloc(sizeof(reservation*) * size);
+	hashtable->amount = 0;
+
+	for (i = 0; i < size; i++) {
+		hashtable->table[i] = NULL;
+	}
+
+	return hashtable;
 }

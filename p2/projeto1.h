@@ -44,6 +44,7 @@ typedef struct {
 	timestamp dura;
 	int cap;
 	int pass_n;
+	int res_n;
 } flight;
 
 typedef struct flt_node {
@@ -51,7 +52,7 @@ typedef struct flt_node {
 	flight flt;
 } flt_node;
 
-typedef struct node *flt_ln;
+typedef struct node *flt_link;
 
 typedef struct {
 	char *code;
@@ -60,8 +61,20 @@ typedef struct {
 } reservation;
 
 typedef struct {
-	int res_amount;
+	flt_link head;
+	flt_link tail;
+} flt_linked_lst;
+
+typedef struct {
+	flt_linked_lst flt_lst;
+	res_ht res_hashtable;
 } info;
+
+typedef struct{
+	int size;
+	reservation **table;
+	int amount;
+} res_ht;
 
 extern timestamp global_date;
 

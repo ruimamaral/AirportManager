@@ -13,7 +13,10 @@
 
 
 int main(){
-	while (command_listener(getchar())) {}
+	info *global_info;
+	global_info->flt_lst = init_flt_list();
+	global_info->hashtable = init_hashtable();
+	while (command_listener(global_info, getchar())) {}
 	return 0;
 }
 
@@ -21,7 +24,7 @@ int main(){
  * Listens for commands entered by the user until it
  * receives the 'q' command.
  */
-int command_listener(char command) {
+int command_listener(info *global_info, char command) {
 	switch (command) {
 		case 'q':
 			return 0;
@@ -42,6 +45,9 @@ int command_listener(char command) {
 			return 1;
 		case 't':
 			exec_set_time();
+			return 1;
+		case 'r':
+			exec_add_reservation(global_info);
 			return 1;
 	}
 	return 1;
@@ -176,9 +182,10 @@ void exec_add_reservation(info global_info) {
 	scanf("%s %d-%d-%d", flt_code, day, month, year);
 	if (getchar() == ' ') {
 		error = list_reservations(flt_code, day, month, year);
+		res_code = "\0";
 	} else {
 		scanf("%s%ld", res_code, pass_n);
-		error = add_reservation(flt_code, day, month, year, res_code, pass_n);
+		error = add_reservation(global_info, flt_code, day, month, year, res_code, pass_n);
 	}
 	if (error) {
 		print_res_error(error, flt_code, res_code);
