@@ -93,7 +93,7 @@ res_ht *init_ht(int size) {
 	res_ht *hashtable = (res_ht*) my_alloc(sizeof(res_ht));
 
 	hashtable->size = size;
-	hashtable->table = (reservation**) my_alloc(sizeof(reservation*) * size);
+	hashtable->array = (reservation**) my_alloc(sizeof(reservation*) * size);
 	hashtable->amount = 0;
 
 	for (i = 0; i < size; i++) {

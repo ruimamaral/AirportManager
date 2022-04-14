@@ -72,7 +72,7 @@ typedef struct {
 
 typedef struct{
 	int size;
-	reservation **table;
+	reservation **array;
 	int amount;
 } res_ht;
 
