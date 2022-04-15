@@ -12,7 +12,7 @@ int add_reservation(info *global_info, char flt_code[], int d,
 
 	if ((len = check_res_code(temp_res_code)) == -1 || len < 10) {
 		return -1;
-	} else if (!get_flight(flt_code)) {
+	} else if (!get_flight(flt_code, date)) {
 		return -2;
 	} else if (get_reservation(temp_res_code)) { /*o get reserva retornara um pointer NULL caso
 		nao encontre nenhuma reserva tall como o get flight idk if it works */
@@ -122,7 +122,7 @@ int hash_str2(char *code, int length, long size) {
 	return hash % size;
 }
 
-long get_size(int size_n) {
+long get_size(int size_n, int size) {
 	int n;
 	long sum;
 
@@ -133,13 +133,7 @@ long get_size(int size_n) {
 		201326611, 402653189, 805306457, 1610612741
 	};
 	if (size_n > 25) {
-		sum = 1610612741;
-		n = size_n - 25;
-
-		for (i = 1; i <= n; i++) {
-			sum = 2 * sum + 1;
-		}
-		return sum;
+		return 2 * size + 1;
 	}
 	return size_array[i];
 }
@@ -149,7 +143,7 @@ char *get_key_res(void *ptr) {
 	return res->code;
 }
 
-void insert_ht(void *ptr, hashtable *ht, char* (*get_key)(void*)) {
+void insert_ht(void *ptr, hashtable *ht, char* get_key(void*)) { /* maybe this brokey */
 	char *key = get_key(ptr);
 	int i = hash_str1(key);
 	int k = hash_str2(key);
@@ -161,6 +155,45 @@ void insert_ht(void *ptr, hashtable *ht, char* (*get_key)(void*)) {
 
 	if (++ht->amount > ht->size / 2) {
 		expand_ht(ht);
+	}
+}
+
+void expand_ht(hashtable *ht) {
+	long old_size = ht->size, new_size = get_size(++ht->size_n, ht->size);
+	void **new_array = (void**) my_alloc((void*) * new_size);
+	void **old_array = ht->array;
+	int i;
+
+	for (i = 0; i < size; i++) {
+		new_array[i] = NULL;
+	}
+
+	ht->array = new_array;
+	ht->size = new_size;
+
+	for (i = 0; i < old_size; i++) {
+		if (old_array[i]) {
+			insert_ht(old_array[i], ht, get_key_res); /* ver se funciona a passagem de funcao */
+		}
+	free(old_array);
+}
+
+void remove_from_ht(char *key, hashtable *ht) {
+	int i = hash_str1(key);
+	int k = hash_str2(key);
+
+	while(strcmp(ht->array[i]->code, key)) {
+		i = (i + k) % ht->size;
+	}
+	ht->array[i] = NULL;
+	i = (i + k) % ht->size;
+	--ht->amount;
+
+	while(ht->array[i]) {
+		temp = ht->array[i];
+		ht->array[i] = NULL;
+		--ht->amount;
+		insert_ht(temp);
 	}
 }
 

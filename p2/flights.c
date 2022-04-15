@@ -58,7 +58,7 @@ int invalid_flt_args(flight new_f, timestamp dep_dt) {
 		printf("invalid date\n");
 	} else if (invalid_duration(new_f.dura.h, new_f.dura.min)) {
 		printf("invalid duration\n");
-	} else if (new_f.cap > MAX_CAP || new_f.cap < MIN_CAP) {
+	} else if (new_f.cap < MIN_CAP) {
 		printf("invalid capacity\n");
 	} else {
 		return FALSE;

@@ -16,7 +16,6 @@
 #define MAX_AP 40
 #define MAX_FLT 30000
 #define MAX_FLT_DURATION 12
-#define MAX_CAP 100
 #define MIN_CAP 10
 #define MINS_IN_YEAR 525600
 #define MINS_IN_DAY 1440
