@@ -104,18 +104,20 @@ hashtable *init_ht(int size_n) {
 	return hashtable;
 }
 
-int hash_res_code1(char *code, int length, int size) {
+int hash_str1(char *code, int length, int size) {
 	long hash = 0;
+	int max_index = length - 1;
 	for (i = 1; i < 10; i++) {
-		hash = hash*23 + code[length - length/i];
+		hash = hash*23 + code[max_index - max_index/i];
 	}
 	return hash % size;
 }
 
-int hash_res_code1(char *code, int length, long size) {
+int hash_str2(char *code, int length, long size) {
 	long hash = 0;
+	int max_index = length - 1;
 	for (i = 1; i < 8; i++) {
-		hash = hash*31 + code[length * (1 - 0.083 * i)];
+		hash = hash*31 + code[max_index * (1 - 0.083 * i)];
 	}
 	return hash % size;
 }
@@ -141,3 +143,24 @@ long get_size(int size_n) {
 	}
 	return size_array[i];
 }
+
+char *get_key_res(void *ptr) {
+	reservation *res = (reservation*) ptr;
+	return res->code;
+}
+
+void insert_ht(void *ptr, hashtable *ht, char* (*get_key)(void*)) {
+	char *key = get_key(ptr);
+	int i = hash_str1(key);
+	int k = hash_str2(key);
+
+	while(ht->array[i]) {
+		i = (i + k) % ht->size;
+	}
+	ht->array[i] = ptr;
+
+	if (++ht->amount > ht->size / 2) {
+		expand_ht(ht);
+	}
+}
+
