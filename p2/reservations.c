@@ -104,7 +104,7 @@ hashtable *init_ht(int size_n) {
 	return hashtable;
 }
 
-int hash_str1(char *code, int length, int size) {
+long hash_str1(char *code, int length, long size) {
 	long hash = 0;
 	int max_index = length - 1;
 	for (i = 1; i < 10; i++) {
@@ -113,7 +113,7 @@ int hash_str1(char *code, int length, int size) {
 	return hash % size;
 }
 
-int hash_str2(char *code, int length, long size) {
+long hash_str2(char *code, int length, long size) {
 	long hash = 0;
 	int max_index = length - 1;
 	for (i = 1; i < 8; i++) {
@@ -145,8 +145,8 @@ char *get_key_res(void *ptr) {
 
 void insert_ht(void *ptr, hashtable *ht, char* get_key(void*)) { /* maybe this brokey */
 	char *key = get_key(ptr);
-	int i = hash_str1(key);
-	int k = hash_str2(key);
+	long i = hash_str1(key);
+	long k = hash_str2(key);
 
 	while(ht->array[i]) {
 		i = (i + k) % ht->size;
@@ -154,15 +154,15 @@ void insert_ht(void *ptr, hashtable *ht, char* get_key(void*)) { /* maybe this b
 	ht->array[i] = ptr;
 
 	if (++ht->amount > ht->size / 2) {
-		expand_ht(ht);
+		expand_ht(ht, get_key);
 	}
 }
 
-void expand_ht(hashtable *ht) {
+void expand_ht(hashtable *ht, char* get_key(void*)) {
 	long old_size = ht->size, new_size = get_size(++ht->size_n, ht->size);
 	void **new_array = (void**) my_alloc((void*) * new_size);
 	void **old_array = ht->array;
-	int i;
+	long i;
 
 	for (i = 0; i < size; i++) {
 		new_array[i] = NULL;
@@ -178,22 +178,36 @@ void expand_ht(hashtable *ht) {
 	free(old_array);
 }
 
-void remove_from_ht(char *key, hashtable *ht) {
-	int i = hash_str1(key);
-	int k = hash_str2(key);
+int remove_from_ht(char *key, hashtable *ht, char* get_key(void*)) {
+	long i = hash_str1(key);
+	long k = hash_str2(key);
+	void *temp;
 
-	while(strcmp(ht->array[i]->code, key)) {
+	while(strcmp(get_key(ht->array[i]), key) && ht->array[i]) {
 		i = (i + k) % ht->size;
 	}
+	if(!ht->array[i]) {
+		return FALSE;
+	}
 	ht->array[i] = NULL;
-	i = (i + k) % ht->size;
 	--ht->amount;
 
-	while(ht->array[i]) {
+	for(i = (i + k) % ht->size; ht->array[i]; i = (i + k) % ht->size) {
 		temp = ht->array[i];
 		ht->array[i] = NULL;
 		--ht->amount;
-		insert_ht(temp);
+		insert_ht(temp, ht, get_key);
+		i = (i + k) % ht->size;
 	}
+	return TRUE;
 }
 
+void *get_from_ht(char *key, hashtable *ht, char* get_key(void*)) {
+	long i = hash_str1(key);
+	long k = hash_str2(key);
+
+	while(strcmp(get_key(ht->array[i]), key) && ht->array[i]) {
+		i = (i + k) % ht->size;
+	}
+	return ht->array[i];
+}

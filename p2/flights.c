@@ -235,3 +235,8 @@ void sort_flights() {
 		global_srtd_flt_list[j] = temp; 
 	}
 }
+
+char *get_key_flt(void *ptr) {
+	flight *flt = (flight*) ptr;
+	return flt->code;
+}
