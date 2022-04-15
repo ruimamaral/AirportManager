@@ -89,16 +89,55 @@ int check_res_code(char code[]) {
 	return i;
 }
 
-res_ht *init_ht(int size) {
-	res_ht *hashtable = (res_ht*) my_alloc(sizeof(res_ht));
+hashtable *init_ht(int size_n) {
+	hashtable *hashtable = (hashtable*) my_alloc(sizeof(hashtable));
+	long size = get_size(size_n);
 
 	hashtable->size = size;
-	hashtable->array = (reservation**) my_alloc(sizeof(reservation*) * size);
+	hashtable->size_n = size_n;
+	hashtable->array = (void**) my_alloc(sizeof(void*) * size);
 	hashtable->amount = 0;
 
 	for (i = 0; i < size; i++) {
 		hashtable->table[i] = NULL;
 	}
-
 	return hashtable;
+}
+
+int hash_res_code1(char *code, int length, int size) {
+	long hash = 0;
+	for (i = 1; i < 10; i++) {
+		hash = hash*23 + code[length - length/i];
+	}
+	return hash % size;
+}
+
+int hash_res_code1(char *code, int length, long size) {
+	long hash = 0;
+	for (i = 1; i < 8; i++) {
+		hash = hash*31 + code[length * (1 - 0.083 * i)];
+	}
+	return hash % size;
+}
+
+long get_size(int size_n) {
+	int n;
+	long sum;
+
+	static const int size_array[] = {
+		53, 97, 193, 389, 769, 1543, 3079, 6151, 12289, 24593,
+		49157, 98317, 196613, 393241, 786433, 1572869, 3145739,
+		6291469, 12582917, 25165843, 50331653, 100663319,
+		201326611, 402653189, 805306457, 1610612741
+	};
+	if (size_n > 25) {
+		sum = 1610612741;
+		n = size_n - 25;
+
+		for (i = 1; i <= n; i++) {
+			sum = 2 * sum + 1;
+		}
+		return sum;
+	}
+	return size_array[i];
 }
