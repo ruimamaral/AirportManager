@@ -33,7 +33,13 @@
  * Adds a flight to the global array of flights.
  */
 void add_flight(info *global_info, flight *flt) {
-	global_info->flt_amount++;
+	flt->res_array = (reservation**) my_alloc(flt->cap * sizeof(reservation));
+	flt->res_n = 0;
+	flt->pass_n = 0;
+	flt->array_index = global_info->flt_amount;
+
+	global_info->flt_array[global_info->flt_amount++] = flt;
+
 	insert_ht(flt, global_info->flt_ht, get_key_flt);
 }
 
@@ -43,10 +49,10 @@ void add_flight(info *global_info, flight *flt) {
  * are met. Returns 0 otherwise, and prints out error messages
  * notifying the user of the error.
  */
-int invalid_flt_args(flight *new_f) {
+int invalid_flt_args(info *global_info, flight *new_f) {
 	if (invalid_flt_code(new_f->code)) {
 		printf("invalid flight code\n");
-	} else if (get_from_ht(new_f)) {
+	} else if (get_from_ht(new_f, global_info->flt_ht)) {
 		printf("flight already exists\n");
 	} else if (!is_airport(new_f->origin)) {
 		printf("%s: no such airport ID\n", new_f->origin);
@@ -87,15 +93,14 @@ int invalid_flt_args(flight *new_f) {
 
 /*
  * Prints out relevant info for every flight currently in the
- * flight hashtable.
+ * unsorted flight array;
  */
 void list_flights(info *global_info) {
 	int i;
 	flight *flt;
-	hashtable *flt_ht = global_info->flt_ht;
 
-	for (i = 0; i < flt_ht->size; i++) {
-		if (!(flt = flt_ht->array[i])) {
+	for (i = 0; i < global_info->flt_amount; i++) {
+		if (!(flt = global_info->flt_array[i])) {
 			continue;
 		}
 		printf("%s %s %s %02d-%02d-%d %02d:%02d\n",
@@ -112,8 +117,8 @@ void list_departing_flights(info *global_info) {
 	int i;
 	flight *flt;
 
-	for (i = 0; i < global_srtd_flt_amount; i++) {
-		flt = global_srtd_flt_arr[i];
+	for (i = 0; i < global_info->srtd_flt_amount; i++) {
+		flt = global_info->srtd_flt_arr[i];
 		printf("%s %s %02d-%02d-%d %02d:%02d\n",
 			flt->code, flt->destin, flt->date.d, flt->date.mth,
 		 	flt->date.y, flt->date.h, flt->date.min);
@@ -128,8 +133,8 @@ void list_arriving_flights(info *global_info) {
 	int i;
 	flight *flt;
 
-	for (i = 0; i < global_srtd_flt_amount; i++) {
-		flt = global_srtd_flt_arr[i];
+	for (i = 0; i < global_info->srtd_flt_amount; i++) {
+		flt = global_info->srtd_flt_arr[i];
 		printf("%s %s %02d-%02d-%d %02d:%02d\n",
 			flt->code, flt->origin, flt->date.d, flt->date.mth,
 		 	flt->date.y, flt->date.h, flt->date.min);
@@ -171,14 +176,14 @@ int invalid_duration(int hours, int mins) {
 void get_flts_departing(char id[], info *global_info) {
 	int i;
 	flight *flt;
-	hashtable *flt_ht = global_info->flt_ht;
 	flight **srtd_flt_array = global_info->srtd_flt_array;
+	int flt_amount = global_info->flt_amount;
 
-	global_srtd_flt_amount = 0; /* resets counter */
+	globalinfo->srtd_flt_amount = 0; /* resets counter */
 
-	for (i = 0; i < flt_ht->size; i++) {
-		flt = flt_ht->array[i];
-		if (flt && !strcmp(flt->origin, id)) {
+	for (i = 0; i < flt_amount; i++) {
+		flt = global_info->flt_array[i];
+		if (!strcmp(flt->origin, id)) {
 			srtd_flt_array[global_info->srtd_flt_amount++] = flt;
 		}
 	}
@@ -192,14 +197,14 @@ void get_flts_departing(char id[], info *global_info) {
 void get_flts_arriving(char id[], info *global_info) {
 	int i;
 	flight *flt;
-	hashtable *flt_ht = global_info->flt_ht;
 	flight **srtd_flt_array = global_info->srtd_flt_array;
+	int flt_amount = global_info->flt_amount;
 
 	global_info->srtd_flt_amount = 0; /* resets counter */
 
 	for (i = 0; i < flt_ht->size; i++) {
-		flt = flt_ht->array[i];
-		if (flt && !strcmp(flight->destin, id)) {
+		flt = global_info->flt_array[i];
+		if (!strcmp(flt->destin, id)) {
 			/* changes flight date to its arrival date
 			 *  in preparation for the sorting*/
 			flt->date = get_date_arrival(flt);
@@ -227,28 +232,33 @@ timestamp get_date_arrival(flight *flt) {
 void sort_flights(info *global_info) {
 	timestamp d;
 	flight *temp;
-	int i, j, flt_amount = global_info->srtd_flt_amount;
-	flight **flt_array = global_info->srtd_flt_array;
+	int i, j, srtd_flt_amount = global_info->srtd_flt_amount;
+	flight **srtd_flt_array = global_info->srtd_flt_array;
 
-	for (i = 1; i < flt_amount; i++) {
-		d = flt_array[i]->date;
+	for (i = 1; i < srtd_flt_amount; i++) {
+		d = srtd_flt_array[i]->date;
 		j = i;
-		temp = flt_array[i];
-		while (j > 0 && datecmp(d, flt_array[j - 1]->date) < 0) {
-			flt_array[j] = flt_array[j - 1];
+		temp = srtd_flt_array[i];
+		while (j > 0 && datecmp(d, srtd_flt_array[j - 1]->date) < 0) {
+			srtd_flt_array[j] = srtd_flt_array[j - 1];
 			j--;
 		}
 		flt_array[j] = temp; 
 	}
 }
 
+/* maybe por a key diretamente no struct voo para ser fast */
 char *get_key_flt(void *ptr) {
 	flight *flt = (flight*) ptr;
+
+	return make_flt_key(flt->code, flt->date);
+}
+
+char *make_flt_key(char *code, timestamp dt) {
 	int key_len = FLIGHT_CODE_LENGTH + 9;
-	timestamp dt = flt->date;
 	char *key = (char*) my_alloc(key_len);
 
-	/* creates a key based on the flight code and date */
 	snprintf(key, key_len, "%s%02d%02d%04d", code, dt.d, dt.m, dt.y);
+
 	return key;
 }

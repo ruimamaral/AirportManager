@@ -7,14 +7,14 @@ int add_reservation(info *global_info, char flt_code[], int d,
 					int m, int y, char temp_res_code[], int pass_n) {
 	int len;
 	timestamp date = {y, m, d, 0, 0};
-	reservation *res;
 	char *final_res_code;
+	flight *flt;
 
 	if ((len = check_res_code(temp_res_code)) == -1 || len < 10) {
 		return -1;
-	} else if (!get_flight(flt_code, date)) {
+	} else if (!(flt = get_from_ht(make_flt_key(flt_code, date)))) {
 		return -2;
-	} else if (get_reservation(temp_res_code)) { /*o get reserva retornara um pointer NULL caso
+	} else if (get_from_ht(temp_res_code)) { /*o get reserva retornara um pointer NULL caso
 		nao encontre nenhuma reserva tall como o get flight idk if it works */
 		return -3;
 	} else if (flight->pass_n + pass_n > flight->cap) {
@@ -26,42 +26,43 @@ int add_reservation(info *global_info, char flt_code[], int d,
 	}
 	final_res_code = (char*) my_alloc(len + 1);
 	strcpy(final_res_code, temp_res_code); /*ver se vem com o \0 */
-	res = create_res(final_res_code, flt_code, pass_n);
-	res_to_hashtable(global_info->hashtable, res);
+	store_res(global_info, create_res(final_res_code, flt, pass_n));
 	return 0;
+}
+
+void store_res(info global_info, reservation *res) {
+	insert_ht(res, global_info->res_ht, get_key_res);
+	flt->res_array[flt->res_n++] = res;
 }
 
 int list_reservations(char flt_code[], int d, int m, int y) {
 	/* maybe utilizar capacidade do voo para ver se as reservas ja foram
 	 * todas encontradas (maybe por pointer para voo em cada reserva para n ter de procurar o voo) */
 	timestamp date = {y, m, d, 0, 0};
-	int res_n;
-	reservation **res_array;
+	int res_n = flt->res_n;
+	reservation **res_array = flt->res_array;
 
-	if (!get_flight(flt_code)) {
+	if (!(flt = get_from_ht(make_flt_key(flt_code, date)))) {
 		return -2;
 	} else if (invalid_date(date)) {
 		return -5;
 	}
-	res_n = get_flight(flt_code)->res_n;
-	res_array = (reservation**) my_alloc(sizeof(reservation*) * res_n);
-	quicksort();
+
 	for (i = 0; i < res_n; i++) {
 		printf("%s %d\n", res_array[i]->code, res_array[i]->pass_n);
 	}
-
-	free(res_array);
 	return 0;
 }
 
-reservation *create_res(char code[], char flt[], int pass_n) {
+reservation *create_res(char code[], flight *flt, int pass_n) {
 	reservation *res = my_alloc(sizeof(reservation));
 
-	strcpy(reservation->code, final_res_code);
-	strcpy(reservation->flt, flt_code);
-	reservation->pass_n = n;
+	res->code = code;
+	res->flt = flt;
+	res->pass_n = pass_n;
 	return res;
 }
+
 void print_res_error(int error, char flt[], char res[]) {
 	if (error =  -1) {
 		printf("\n");

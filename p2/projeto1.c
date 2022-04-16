@@ -101,7 +101,7 @@ void exec_list_airports() {
  */
 void exec_add_flight(info *global_info) {
 	char c = getchar();
-	flight *new_f;
+	flight *new_f = (flight*) my_alloc(sizeof(flight));
 
 	if (c == ' ') { /* checks if there are more arguments */
 		scanf("%s %s %s %d-%d-%d %d:%d %d:%d %d",
@@ -109,12 +109,12 @@ void exec_add_flight(info *global_info) {
 			&new_f->date.mth, &new_f->date.y, &new_f->date.h,
 			&new_f->date.min, &new_f->dura.h, &new_f->dura.min, &new_f->cap);
 
-		if (invalid_flt_args(new_f)) {
+		if (invalid_flt_args(global_info, new_f)) {
 			return;
 		}
-		add_flight(new_f);
+		add_flight(global_info, new_f);
 	} else {
-		list_flights();
+		list_flights(global_info);
 	}
 }
 
@@ -123,7 +123,7 @@ void exec_add_flight(info *global_info) {
  * Lists every flight departing from a given airport sorted
  * from oldest to most recent.
  */
-void exec_list_departing_flts() {
+void exec_list_departing_flts(info *global_info) {
 	char id[AP_ID_LENGTH];
 	scanf("%s", id);
 
@@ -131,9 +131,9 @@ void exec_list_departing_flts() {
 		printf("%s: no such airport ID\n", id);	
 		return;
 	}
-	get_flts_departing(id);
-	sort_flights();
-	list_departing_flights();
+	get_flts_departing(global_info, id);
+	sort_flights(global_info);
+	list_departing_flights(global_info);
 }
 
 /*
@@ -141,7 +141,7 @@ void exec_list_departing_flts() {
  * Lists every flight arriving at a given airport, sorted
  * from oldest to most recent.
  */
-void exec_list_arriving_flts() {
+void exec_list_arriving_flts(info *global_info) {
 	char id[AP_ID_LENGTH];
 	scanf("%s", id);
 
@@ -149,9 +149,9 @@ void exec_list_arriving_flts() {
 		printf("%s: no such airport ID\n", id);
 		return;
 	}
-	get_flts_arriving(id);
-	sort_flights();
-	list_arriving_flights();
+	get_flts_arriving(global_info, id);
+	sort_flights(global_info);
+	list_arriving_flights(global_info);
 }
 
 /*
@@ -178,10 +178,10 @@ void exec_add_reservation(info global_info) {
 	char flt_code[FLIGHT_CODE_LENGTH], res_code[MAX_CMD_LEN];
 	int day, month, year, pass_n, error;
 
-	scanf("%s %d-%d-%d", flt_code, day, month, year);
+	scanf("%s %d-%d-%d", flt_code, &day, &month, &year);
 	if (getchar() == ' ') {
 		error = list_reservations(flt_code, day, month, year);
-		res_code = "\0";
+		res_code = '\0'; /* maybe brokey */
 	} else {
 		scanf("%s%ld", res_code, pass_n);
 		error = add_reservation(global_info, flt_code, day, month, year, res_code, pass_n);

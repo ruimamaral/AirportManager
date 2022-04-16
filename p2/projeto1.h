@@ -45,6 +45,7 @@ typedef struct {
 	int cap;
 	int pass_n;
 	int res_n;
+	int array_index;
 	reservation **res_array;
 } flight;
 /*
@@ -69,7 +70,8 @@ typedef struct {
 typedef struct {
 	hashtable flt_ht;
 	int flt_amount;
-	flight **srtd_flt_array;
+	flight *srtd_flt_array[MAX_FLT];
+	flight *flt_array[MAX_FLT];
 	int srtd_flt_amount;
 	hashtable res_ht;
 } info;
