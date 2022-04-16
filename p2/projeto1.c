@@ -99,21 +99,20 @@ void exec_list_airports() {
  * Adds a flight to the system, or lists every flight
  * if no arguments are given.
  */
-void exec_add_flight() {
+void exec_add_flight(info *global_info) {
 	char c = getchar();
-	flight new_f;
-	timestamp dep_dt;
+	flight *new_f;
 
 	if (c == ' ') { /* checks if there are more arguments */
 		scanf("%s %s %s %d-%d-%d %d:%d %d:%d %d",
-			new_f.code, new_f.origin, new_f.destin, &dep_dt.d,
-			&dep_dt.mth, &dep_dt.y, &dep_dt.h, &dep_dt.min,
-			&new_f.dura.h, &new_f.dura.min, &new_f.cap);
+			new_f->code, new_f->origin, new_f->destin, &new_f->date.d,
+			&new_f->date.mth, &new_f->date.y, &new_f->date.h,
+			&new_f->date.min, &new_f->dura.h, &new_f->dura.min, &new_f->cap);
 
-		if (invalid_flt_args(new_f, dep_dt)) {
+		if (invalid_flt_args(new_f)) {
 			return;
 		}
-		add_flight(new_f, dep_dt);
+		add_flight(new_f);
 	} else {
 		list_flights();
 	}

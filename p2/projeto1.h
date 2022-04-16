@@ -13,6 +13,7 @@
 #define AP_COUNTRY_LENGTH 31
 #define AP_CITY_LENGTH 51
 #define FLIGHT_CODE_LENGTH 7
+#define N_LETTERS_IN_CODE 3
 #define MAX_AP 40
 #define MAX_FLT 30000
 #define MAX_FLT_DURATION 12
@@ -39,7 +40,7 @@ typedef struct {
 	char code[FLIGHT_CODE_LENGTH];
 	char origin[AP_ID_LENGTH];
 	char destin[AP_ID_LENGTH];
-	timestamp dep_date;
+	timestamp date;
 	timestamp dura;
 	int cap;
 	int pass_n;
@@ -66,8 +67,11 @@ typedef struct {
 } flt_linked_lst;
 */
 typedef struct {
-	flt_linked_lst flt_lst;
-	res_ht res_hashtable;
+	hashtable flt_ht;
+	int flt_amount;
+	flight **srtd_flt_array;
+	int srtd_flt_amount;
+	hashtable res_ht;
 } info;
 
 typedef struct{

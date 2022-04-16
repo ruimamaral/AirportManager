@@ -14,27 +14,27 @@
 #include <ctype.h>
 
 /* Tracks the global amount of flights */
-int global_flight_amount = 0;
+/*int global_flight_amount = 0;*/
 
 /* Tracks the amount of flights that were sorted */
-int global_srtd_flt_amount = 0;
+/*int global_srtd_flt_amount = 0;*/
 
 /* Array containing every flight */
-flight global_flt_list[MAX_FLT];
+/*flight global_flt_list[MAX_FLT];*/
 
 
 /* 
  * Auxiliary array of flights that stores flights departing/arriving
  * to a given airport as part of the execution of 'c' and 'p' commands.
  */
-flight global_srtd_flt_list[MAX_FLT];
+/*flight *global_srtd_flt_arr[MAX_FLT];*/
 
 /*
  * Adds a flight to the global array of flights.
  */
-void add_flight(flight flight, timestamp dep_date) {
-	flight.dep_date = dep_date;
-	global_flt_list[global_flight_amount++] = flight;
+void add_flight(info *global_info, flight *flt) {
+	global_info->flt_amount++;
+	insert_ht(flt, global_info->flt_ht, get_key_flt);
 }
 
 /*
@@ -43,22 +43,22 @@ void add_flight(flight flight, timestamp dep_date) {
  * are met. Returns 0 otherwise, and prints out error messages
  * notifying the user of the error.
  */
-int invalid_flt_args(flight new_f, timestamp dep_dt) {
-	if (invalid_flt_code(new_f.code)) {
+int invalid_flt_args(flight *new_f) {
+	if (invalid_flt_code(new_f->code)) {
 		printf("invalid flight code\n");
-	} else if (is_flight(new_f.code, dep_dt)) {
+	} else if (get_from_ht(new_f)) {
 		printf("flight already exists\n");
-	} else if (!is_airport(new_f.origin)) {
-		printf("%s: no such airport ID\n", new_f.origin);
-	} else if (!is_airport(new_f.destin)) {
-		printf("%s: no such airport ID\n", new_f.destin);
+	} else if (!is_airport(new_f->origin)) {
+		printf("%s: no such airport ID\n", new_f->origin);
+	} else if (!is_airport(new_f->destin)) {
+		printf("%s: no such airport ID\n", new_f->destin);
 	} else if (global_flight_amount >= MAX_FLT) {
 		printf("too many flights\n");
-	} else if (invalid_date(dep_dt)) {
+	} else if (invalid_date(new_f->date)) {
 		printf("invalid date\n");
-	} else if (invalid_duration(new_f.dura.h, new_f.dura.min)) {
+	} else if (invalid_duration(new_f->dura.h, new_f->dura.min)) {
 		printf("invalid duration\n");
-	} else if (new_f.cap < MIN_CAP) {
+	} else if (new_f->cap < MIN_CAP) {
 		printf("invalid capacity\n");
 	} else {
 		return FALSE;
@@ -72,33 +72,35 @@ int invalid_flt_args(flight new_f, timestamp dep_dt) {
  * with that code, on the same day as the new flight.
  * Returns 0 otherwise.
  */
-flight *get_flight(char str[], timestamp dt) {
+/*flight *get_flight(char str[], timestamp dt) {
 	int i;
 	flight flt, *ptr = NULL;
 
 	for (i = 0; i < global_flight_amount; i++) {
 		flt = global_flt_list[i];
-		if (!strcmp(flt.code, str) && same_day(flt.dep_date, dt)) {
+		if (!strcmp(flt.code, str) && same_day(flt.date, dt)) {
 			ptr = &flt;
 		}
 	}
 	return ptr;
-}
+}*/
 
 /*
  * Prints out relevant info for every flight currently in the
- * global array.
+ * flight hashtable.
  */
-void list_flights() {
+void list_flights(info *global_info) {
 	int i;
-	flight flt;
+	flight *flt;
+	hashtable *flt_ht = global_info->flt_ht;
 
-	for (i = 0; i < global_flight_amount; i++) {
-		flt = global_flt_list[i];
+	for (i = 0; i < flt_ht->size; i++) {
+		if (!(flt = flt_ht->array[i])) {
+			continue;
+		}
 		printf("%s %s %s %02d-%02d-%d %02d:%02d\n",
-			flt.code, flt.origin, flt.destin, flt.dep_date.d,
-			flt.dep_date.mth, flt.dep_date.y, flt.dep_date.h,
-		 	flt.dep_date.min);
+			flt->code, flt->origin, flt->destin, flt->date.d,
+			flt->date.mth, flt->date.y, flt->date.h, flt->date.min);
 	}
 }
 
@@ -106,15 +108,15 @@ void list_flights() {
  * Prints out info for every flight in the auxiliary flight array,
  * excluding the airport of origin.
  */
-void list_departing_flights() {
+void list_departing_flights(info *global_info) {
 	int i;
-	flight flt;
+	flight *flt;
 
 	for (i = 0; i < global_srtd_flt_amount; i++) {
-		flt = global_srtd_flt_list[i];
+		flt = global_srtd_flt_arr[i];
 		printf("%s %s %02d-%02d-%d %02d:%02d\n",
-			flt.code, flt.destin, flt.dep_date.d, flt.dep_date.mth,
-		 	flt.dep_date.y, flt.dep_date.h, flt.dep_date.min);
+			flt->code, flt->destin, flt->date.d, flt->date.mth,
+		 	flt->date.y, flt->date.h, flt->date.min);
 	}
 }
 
@@ -122,15 +124,15 @@ void list_departing_flights() {
  * Prints out info for every flight in the auxiliary flight array,
  * excluding the airport from where they departed.
  */
-void list_arriving_flights() {
+void list_arriving_flights(info *global_info) {
 	int i;
-	flight flt;
+	flight *flt;
 
 	for (i = 0; i < global_srtd_flt_amount; i++) {
-		flt = global_srtd_flt_list[i];
+		flt = global_srtd_flt_arr[i];
 		printf("%s %s %02d-%02d-%d %02d:%02d\n",
-			flt.code, flt.origin, flt.dep_date.d, flt.dep_date.mth,
-		 	flt.dep_date.y, flt.dep_date.h, flt.dep_date.min);
+			flt->code, flt->origin, flt->date.d, flt->date.mth,
+		 	flt->date.y, flt->date.h, flt->date.min);
 	}
 }
 
@@ -139,12 +141,12 @@ void list_arriving_flights() {
  * Returns 0 otherwise.
  */
 int invalid_flt_code(char cd[]) {
-	int i = 3;
+	int i;
 
 	if (!isupper(cd[0]) || !isupper(cd[1]) || cd[2] > '9' || cd[2] < '1') {
 		return TRUE;
 	}
-	for (i = 3; cd[i]; ++i) {
+	for (i = N_LETTERS_IN_CODE; cd[i]; ++i) {
 		if (!isdigit(cd[i])) {
 			return TRUE;
 		}
@@ -166,19 +168,20 @@ int invalid_duration(int hours, int mins) {
  * Fills up auxiliary array of flights with every flight departing
  * from the airport represented by the id received.
  */
-int get_flts_departing(char id[]) {
+void get_flts_departing(char id[], info *global_info) {
 	int i;
-	flight flight;
+	flight *flt;
+	hashtable *flt_ht = global_info->flt_ht;
+	flight **srtd_flt_array = global_info->srtd_flt_array;
 
 	global_srtd_flt_amount = 0; /* resets counter */
 
-	for (i = 0; i < global_flight_amount; i++) {
-		flight = global_flt_list[i];
-		if (!strcmp(flight.origin, id)) {
-			global_srtd_flt_list[global_srtd_flt_amount++] = flight;
+	for (i = 0; i < flt_ht->size; i++) {
+		flt = flt_ht->array[i];
+		if (flt && !strcmp(flt->origin, id)) {
+			srtd_flt_array[global_info->srtd_flt_amount++] = flt;
 		}
 	}
-	return global_srtd_flt_amount;
 }
 
 
@@ -186,19 +189,21 @@ int get_flts_departing(char id[]) {
  * Fills up auxiliary array of flights with every flight arriving at
  * the airport represented by the id received.
  */
-void get_flts_arriving(char id[]) {
+void get_flts_arriving(char id[], info *global_info) {
 	int i;
-	flight flight;
+	flight *flt;
+	hashtable *flt_ht = global_info->flt_ht;
+	flight **srtd_flt_array = global_info->srtd_flt_array;
 
-	global_srtd_flt_amount = 0; /* resets counter */
+	global_info->srtd_flt_amount = 0; /* resets counter */
 
-	for (i = 0; i < global_flight_amount; i++) {
-		flight = global_flt_list[i];
-		if (!strcmp(flight.destin, id)) {
+	for (i = 0; i < flt_ht->size; i++) {
+		flt = flt_ht->array[i];
+		if (flt && !strcmp(flight->destin, id)) {
 			/* changes flight date to its arrival date
 			 *  in preparation for the sorting*/
-			flight.dep_date = get_date_arrival(flight);
-			global_srtd_flt_list[global_srtd_flt_amount++] = flight;
+			flt->date = get_date_arrival(flt);
+			srtd_flt_array[global_info->srtd_flt_amount++] = flt;
 		}
 	}
 }
@@ -207,11 +212,11 @@ void get_flts_arriving(char id[]) {
  * Receives the date of departure and duration of a flight and returns
  * a timestamp of the time of arrival.
  */
-timestamp get_date_arrival(flight flt) {
+timestamp get_date_arrival(flight *flt) {
 	int unix1, unix2;
 
-	unix1 = get_unix_time(flt.dep_date);
-	unix2 = flt.dura.h * 60 + flt.dura.min;
+	unix1 = get_unix_time(flt->date);
+	unix2 = flt->dura.h * 60 + flt->dura.min;
 	return unix_to_regular(unix1 + unix2);
 }
 
@@ -219,24 +224,31 @@ timestamp get_date_arrival(flight flt) {
  * Sorts auxiliary array of flights from oldest to most recent.
  * Insertion sort.
  */
-void sort_flights() {
+void sort_flights(info *global_info) {
 	timestamp d;
-	flight temp;
-	int i, j;
+	flight *temp;
+	int i, j, flt_amount = global_info->srtd_flt_amount;
+	flight **flt_array = global_info->srtd_flt_array;
 
-	for (i = 1; i < global_srtd_flt_amount; i++) {
-		d = global_srtd_flt_list[i].dep_date;
+	for (i = 1; i < flt_amount; i++) {
+		d = flt_array[i]->date;
 		j = i;
-		temp = global_srtd_flt_list[i];
-		while (j > 0 && datecmp(d, global_srtd_flt_list[j - 1].dep_date) < 0) {
-			global_srtd_flt_list[j] = global_srtd_flt_list[j - 1];
+		temp = flt_array[i];
+		while (j > 0 && datecmp(d, flt_array[j - 1]->date) < 0) {
+			flt_array[j] = flt_array[j - 1];
 			j--;
 		}
-		global_srtd_flt_list[j] = temp; 
+		flt_array[j] = temp; 
 	}
 }
 
 char *get_key_flt(void *ptr) {
 	flight *flt = (flight*) ptr;
-	return flt->code;
+	int key_len = FLIGHT_CODE_LENGTH + 9;
+	timestamp dt = flt->date;
+	char *key = (char*) my_alloc(key_len);
+
+	/* creates a key based on the flight code and date */
+	snprintf(key, key_len, "%s%02d%02d%04d", code, dt.d, dt.m, dt.y);
+	return key;
 }
