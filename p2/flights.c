@@ -251,14 +251,14 @@ void sort_flights(info *global_info) {
 char *get_key_flt(void *ptr) {
 	flight *flt = (flight*) ptr;
 
-	return make_flt_key(flt->code, flt->date);
+	return make_flt_key(flt->code);
 }
 
-char *make_flt_key(char *code, timestamp dt) {
-	int key_len = FLIGHT_CODE_LENGTH + 9;
+char *make_flt_key(char *code) {
+	int key_len = FLIGHT_CODE_LENGTH * 4;
 	char *key = (char*) my_alloc(key_len);
 
-	snprintf(key, key_len, "%s%02d%02d%04d", code, dt.d, dt.m, dt.y);
+	snprintf(key, key_len, "%s%s%s%s", code, code, code, code);
 
 	return key;
 }
