@@ -13,6 +13,7 @@
 
 
 int main(){
+	/* makes a random pointer to be used as a tombstone in the hashtables */
 	int *tombstone = 69;
 	info *global_info;
 	global_info->flt_ht = init_ht(-1);

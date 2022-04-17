@@ -95,7 +95,7 @@ int check_res_code(char code[]) {
 }
 
 int remove_reservation(info global_info, char* code) {
-	reservation **res_ht = global_info->res_ht;
+	hashtable *res_ht = global_info->res_ht;
 	reservation *res;
 	flight *flt;
 	int i;
@@ -162,8 +162,9 @@ long get_size(int size_n, int size) {
 	if (size_n > 16) {
 		return 2 * size + 1;
 	}
+	/* sets fixed size for flight array */
 	if (size_n < 0) {
-		return 60000;
+		return 45000;
 	}
 	return size_array[i];
 }

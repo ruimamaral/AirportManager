@@ -179,7 +179,7 @@ void get_flts_departing(char id[], info *global_info) {
 	flight **srtd_flt_array = global_info->srtd_flt_array;
 	int flt_amount = global_info->flt_amount;
 
-	globalinfo->srtd_flt_amount = 0; /* resets counter */
+	global_info->srtd_flt_amount = 0; /* resets counter */
 
 	for (i = 0; i < flt_amount; i++) {
 		flt = global_info->flt_array[i];
@@ -251,32 +251,38 @@ void sort_flights(info *global_info) {
 char *get_key_flt(void *ptr) {
 	flight *flt = (flight*) ptr;
 
-	return make_flt_key(flt->code);
+	return make_flt_key(flt->code, flt->date);
 }
 
-char *make_flt_key(char *code) {
-	int key_len = (FLIGHT_CODE_LENGTH - 1) * 2;
+char *make_flt_key(char *code, timestamp date) {
+	int key_len = FLIGHT_CODE_LENGTH + 2 + 2 + 4;
 	char *key = (char*) my_alloc(key_len);
 
-	snprintf(key, key_len, "%s%s", code, code);
+	snprintf(key, key_len, "%s%02d%02d%04d", code, d, m, y);
 
 	return key;
 }
 
 int remove_flight(info global_info, char *code) {
 	flight *flt;
-	flight **flt_ht = global_info->flt_ht, flt_array = global_info->flt_array;
+	hashtable *flt_ht = global_info->flt_ht, flt_array = global_info->flt_array;
 	char *key = make_flt_key(code);
+	void *ts = global_info->ts;
+	hashtable *res_ht = global_info->res_ht;
 
-	while (flt = (flight*) get_from_ht(key, flt_ht, get_key_flt)) {
-		remove_from_ht(flt, flt_ht, get_key_flt);
-		global_info->flt_amount--;
-		/* iterates from the end to the beginning */
-		for(i = flt->res_n - 1; i >= 0; i--) {
-			remove_reservation(flt->res_array[i]);
+	for (i = 0; i < flt_ht->amount; i++) {
+		if (!strcmp(code, flt_array[i]->code)){
+			remove_from_ht(flt, flt_ht, get_key_flt);
+			/* iterates from the end to the beginning */
+			for(i = flt->res_n - 1; i >= 0; i--) {
+				remove_from_ht(flt->res_array[i], res_ht, ts, get_key_res);
+				free(flt->res_array[i]->code);
+				free(flt->res_array[i]);
+			}
+			rem_from_array(flt_array, flt->array_index, flt_ht->amount + 1);
+			i--;
+			free(flt->res_array);
+			free(flt);
 		}
-		rem_from_array(flt_array, flt->array_index, global_info->flt_amount--);
-		free(flt->res_array);
-		free(flt);
 	}
 }
