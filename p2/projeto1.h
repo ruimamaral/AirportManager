@@ -90,7 +90,7 @@ extern timestamp global_date;
 
 /* projeto1.c */
 
-int command_listener(char);
+int command_listener(info*, char);
 void exec_add_airport();
 void exec_list_airports(info*);
 void exec_add_flight();
@@ -101,6 +101,7 @@ void exec_add_reservation(info*);
 void exec_remove_item(info*);
 int isupper_str(char[]);
 void *my_alloc(unsigned);
+void free_mem(info*);
 
 /* airports.c */
 
@@ -129,9 +130,11 @@ void sort_flights(info*);
 char *get_key_flt(void*);
 char *make_flt_key(char[], timestamp);
 int remove_flight(info*, char[]);
+void rem_flt_array(flight**, int, int);
 
 /* dates.c */
 
+timestamp create_date(int, int, int, int, int);
 int get_unix_time(timestamp);
 int get_month_mins(int);
 timestamp unix_to_regular(int);
@@ -141,9 +144,9 @@ int datecmp(timestamp, timestamp);
 
 /* reservations.c */
 
-int add_reservation(info, char[], int, int, int, char[], int);
+int add_reservation(info*, char[], int, int, int, char[], int);
 void store_res(info*, reservation*, flight*);
-int list_reservations(char[], int, int, int);
+int list_reservations(info*, char[], int, int, int);
 reservation *create_res(char[], flight*, int);
 void print_res_error(int, char[], char[]);
 int check_res_code(char[]);
@@ -154,9 +157,9 @@ long hash_str2(char[], int, long);
 long get_size(int, int);
 char *get_key_res(void*);
 void insert_ht(void*, hashtable*, void*, char* (*)(void*));
-void expand_ht(hashtable*, void*, char*);
+void expand_ht(hashtable*, void*, char* (*)(void*));
 void remove_from_ht(void*, hashtable*, void*, char* (*)(void*));
 void *get_from_ht(char[], hashtable*, void*, char* (*)(void*));
 int get_res_index(reservation**, reservation*, int);
-void rem_from_array(void**, int, int);
-void add_to_array(void**, int, void*, int);
+void rem_res_array(reservation**, int, int);
+void add_res_array(reservation**, int, reservation*, int);

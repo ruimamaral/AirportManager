@@ -10,18 +10,19 @@
 #include "projeto1.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 
 int main(){
 	int tombstone = 69;
-	info *global_info;
+	info *global_info = (info*) my_alloc(sizeof(info));
 	global_info->flt_ht = init_ht(-1);
 	global_info->res_ht = init_ht(0);
-	global_info->flt_amount = 0; /* ja tenho esta info na hashtable */
 	global_info->srtd_flt_amount = 0;
 	/* uses a random pointer to serve as a tombstone in the hashtables */
 	global_info->ts = &tombstone;
 	while (command_listener(global_info, getchar())) {}
+	free_mem(global_info);
 	return 0;
 }
 
@@ -82,8 +83,8 @@ void exec_add_airport() {
  * Fetches and lists info about given airports.
  * With no arguments prints info of every airport in the system.
  */
-void exec_list_airports(info global_info) {
-	char c = getchar(), id[AP_IDLENGTH];
+void exec_list_airports(info *global_info) {
+	char c = getchar(), id[AP_ID_LENGTH];
 
 	if (c == ' ') {
 		while (c != '\n' && c != EOF) {
@@ -182,16 +183,16 @@ void exec_set_time() {
 	printf("%02d-%02d-%d\n", global_date.d, global_date.mth, global_date.y);
 }
 
-void exec_add_reservation(info global_info) {
+void exec_add_reservation(info *global_info) {
 	char flt_code[FLIGHT_CODE_LENGTH], res_code[MAX_CMD_LEN];
 	int day, month, year, pass_n, error;
 
 	scanf("%s %d-%d-%d", flt_code, &day, &month, &year);
 	if (getchar() == ' ') {
-		error = list_reservations(flt_code, day, month, year);
-		res_code = '\0'; /* maybe brokey */
+		error = list_reservations(global_info, flt_code, day, month, year);
+		res_code[0] = '\0'; /* maybe brokey */
 	} else {
-		scanf("%s%ld", res_code, pass_n);
+		scanf("%s%d", res_code, &pass_n);
 		error = add_reservation(global_info, flt_code, day, month, year, res_code, pass_n);
 	}
 	if (error) {
@@ -199,8 +200,8 @@ void exec_add_reservation(info global_info) {
 	}
 }
 
-void exec_remove_item(info global_info) {
-	char buffer[MAX_CMD_LEN], *code, *key;
+void exec_remove_item(info *global_info) {
+	char buffer[MAX_CMD_LEN], *code;
 	int len = strlen(buffer), success = 0;
 
 	code = (char*) my_alloc(len);
@@ -241,4 +242,19 @@ void *my_alloc(unsigned size) {
 		exit(1);
 	}
 	return ptr;
+}
+
+void free_mem(info *global_info) {
+	flight **flt_array = global_info->flt_array;
+	int i, flt_n = global_info->flt_ht->amount;
+
+	for (i = 0; i < flt_n; i++) {
+		free(flt_array[i]->res_array);
+		free(flt_array[i]);
+	}
+	free(global_info->flt_ht->array);
+	free(global_info->res_ht->array);
+	free(global_info->flt_ht);
+	free(global_info->res_ht);
+	free(global_info);
 }

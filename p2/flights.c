@@ -11,8 +11,8 @@
 #include "projeto1.h"
 #include <string.h>
 #include <ctype.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 /* Tracks the global amount of flights */
 /*int global_flight_amount = 0;*/
@@ -262,14 +262,14 @@ char *make_flt_key(char code[], timestamp date) {
 	int key_len = FLIGHT_CODE_LENGTH + 2 + 2 + 4;
 	char *key = (char*) my_alloc(key_len);
 
-	snprintf(key, key_len, "%s%02d%02d%04d", code, date.d, date.mth, date.y);
+	sprintf(key, "%s%02d%02d%04d", code, date.d, date.mth, date.y);
 
 	return key;
 }
 
 int remove_flight(info *global_info, char code[]) {
 	flight *flt;
-	void **flt_array = global_info->flt_array; /* sus void */
+	flight **flt_array = global_info->flt_array;
 	void *ts = global_info->ts;
 	hashtable *flt_ht = global_info->flt_ht;
 	hashtable *res_ht = global_info->res_ht;
@@ -284,7 +284,7 @@ int remove_flight(info *global_info, char code[]) {
 				free(flt->res_array[i]->code);
 				free(flt->res_array[i]);
 			}
-			rem_from_array(flt_array, flt->array_index, flt_ht->amount + 1);
+			rem_flt_array(flt_array, flt->array_index, flt_ht->amount + 1);
 			i--;
 			free(flt->res_array);
 			free(flt);
@@ -292,4 +292,11 @@ int remove_flight(info *global_info, char code[]) {
 		}
 	}
 	return success;
+}
+
+void rem_flt_array(flight **array, int index, int count) {
+	while (index < count - 1) {
+		array[index] = array[index + 1];
+		index++;
+	}
 }

@@ -14,7 +14,15 @@
 /* Universal system date */
 timestamp global_date = {2022, 1, 1, 0, 0};
 
-
+timestamp create_date(int y, int mth, int d, int h, int min) {
+	timestamp date;
+	date.y = y;
+	date.mth = mth;
+	date.d = d;
+	date.h = h;
+	date.min = min;
+	return date;
+}
 /*
  * Turns a date in a timestamp format into a unix-like format.
  * Returns an integer corresponding to the minute sum.
