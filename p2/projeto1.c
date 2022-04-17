@@ -13,11 +13,13 @@
 
 
 int main(){
+	int *tombstone = 69;
 	info *global_info;
 	global_info->flt_ht = init_ht(-1);
 	global_info->res_ht = init_ht(0);
-	global_info->flt_amount = 0;
+	global_info->flt_amount = 0; /* ja tenho esta info na hashtable */
 	global_info->srtd_flt_amount = 0;
+	global_info->ts = tombstone;
 	while (command_listener(global_info, getchar())) {}
 	return 0;
 }

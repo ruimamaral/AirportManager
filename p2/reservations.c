@@ -3,19 +3,18 @@
 #include <stdio.h>
 #include <string.h>
 
-int add_reservation(info *global_info, char flt_code[], int d,
-					int m, int y, char temp_res_code[], int pass_n) {
+int add_reservation(info *glb_info, char flt_code[], int d,
+					int m, int y, char buff[], int pass_n) {
 	int len;
 	timestamp date = {y, m, d, 0, 0};
-	char *final_res_code;
-	flight *flt;
+	char *final_res_code, key = make_flt_key(flt_code);
+	flight *flt = get_from_ht(key, glb_info->flt_ht, glb_info->ts, get_key_flt);
 
-	if ((len = check_res_code(temp_res_code)) == -1 || len < 10) {
+	if ((len = check_res_code(buff)) == -1 || len < 10) {
 		return -1;
-	} else if (!(flt = get_from_ht(make_flt_key(flt_code)))) {
+	} else if (!flt) {
 		return -2;
-	} else if (get_from_ht(temp_res_code)) { /*o get reserva retornara um pointer NULL caso
-		nao encontre nenhuma reserva tall como o get flight idk if it works */
+	} else if (get_from_ht(buff, glb_info->res_ht, glb_info->ts, get_key_res)) {
 		return -3;
 	} else if (flt->pass_n + pass_n > flight->cap) {
 		return -4;
@@ -25,17 +24,15 @@ int add_reservation(info *global_info, char flt_code[], int d,
 		return -6;
 	}
 	final_res_code = (char*) my_alloc(len + 1);
-	strcpy(final_res_code, temp_res_code); /*ver se vem com o \0 */
-	store_res(global_info, create_res(final_res_code, flt, pass_n), flt);
+	strcpy(final_res_code, buff);
+	store_res(glb_info, create_res(final_res_code, flt, pass_n), flt);
 	return 0;
 }
 
 void store_res(info global_info, reservation *res, flight *flt) {
-	reservation *temp = flt->res_array[i];
-	int res_n = flt->res_n;
 	int i = get_res_index(res, flt->res_array, flt->res_n);
 
-	insert_ht(res, global_info->res_ht, get_key_res);
+	insert_ht(res, global_info->res_ht, global_info->ts, get_key_res);
 	add_to_array(flt->res_array, i, res, flt->res_n++);
 	flt->pass_n += res->pass_n;
 }
@@ -105,7 +102,7 @@ int remove_reservation(info global_info, char* code) {
 
 	if (res = (reservation*) get_from_ht(code, res_ht, get_key_res)) {
 		flt = res->flt;
-		remove_from_ht(res, res_ht, get_key_res);
+		remove_from_ht(res, res_ht, global_info->ts, get_key_res);
 		/* iterates from the end to the beginning */
 		for (i = flt->res_n - 1; i >= 0; i--) {
 			if(!strcmp(code, flt->res_array[i]->code)) {
@@ -176,22 +173,22 @@ char *get_key_res(void *ptr) {
 	return res->code;
 }
 
-void insert_ht(void *ptr, hashtable *ht, char* get_key(void*)) { /* maybe this brokey */
+void insert_ht(void *ptr, hashtable *ht, void *ts, char* get_key(void*)) { /* maybe this brokey */
 	char *key = get_key(ptr);
 	long i = hash_str1(key);
 	long k = hash_str2(key);
 
-	while(ht->array[i]) {
+	while(ht->array[i] && ht->array[i] != ts) {
 		i = (i + k) % ht->size;
 	}
 	ht->array[i] = ptr;
 
-	if (++ht->amount > ht->size / 2) {
-		expand_ht(ht, get_key);
+	if (++ht->amount > ht->size * 2 / 3) {
+		expand_ht(ht, ts, get_key);
 	}
 }
 
-void expand_ht(hashtable *ht, char* get_key(void*)) {
+void expand_ht(hashtable *ht, void *ts, char* get_key(void*)) {
 	long old_size = ht->size, new_size = get_size(++ht->size_n, ht->size);
 	void **new_array = (void**) my_alloc((void*) * new_size);
 	void **old_array = ht->array;
@@ -205,38 +202,31 @@ void expand_ht(hashtable *ht, char* get_key(void*)) {
 	ht->size = new_size;
 
 	for (i = 0; i < old_size; i++) {
-		if (old_array[i]) {
-			insert_ht(old_array[i], ht, get_key); /* ver se funciona a passagem de funcao */
+		if (old_array[i] && old_array[i] != ts) {
+			insert_ht(old_array[i], ht, ts, get_key); /* ver se funciona a passagem de funcao */
 		}
 	free(old_array);
 }
 
-void remove_from_ht(void *ptr, hashtable *ht, char* get_key(void*)) {
+void remove_from_ht(void *ptr, hashtable *ht, void *ts, char* get_key(void*)) {
 	char *key = get_key(ptr);
 	long i = hash_str1(key);
 	long k = hash_str2(key);
 	void *temp;
 
-	while(strcmp(get_key(ht->array[i]), key) && ht->array[i]) {
+	while(strcmp(get_key(ht->array[i]), key)) {
 		i = (i + k) % ht->size;
 	}
-	ht->array[i] = NULL;
+	ht->array[i] = ts;
 	--ht->amount;
-
-	for(i = (i + k) % ht->size; ht->array[i]; i = (i + k) % ht->size) {
-		temp = ht->array[i];
-		ht->array[i] = NULL;
-		--ht->amount;
-		insert_ht(temp, ht, get_key);
-		i = (i + k) % ht->size;
-	}
 }
 
-void *get_from_ht(char *key, hashtable *ht, char* get_key(void*)) {
+void *get_from_ht(char *key, hashtable *ht, void *ts, char* get_key(void*)) {
 	long i = hash_str1(key);
 	long k = hash_str2(key);
+	void **array = hs->array;
 
-	while(strcmp(get_key(ht->array[i]), key) && ht->array[i]) {
+	while(array[i] && (array[i] == ts || strcmp(get_key(array[i]), key))) {
 		i = (i + k) % ht->size;
 	}
 	return ht->array[i];
@@ -255,7 +245,7 @@ int get_res_index(reservation **res_array, reservation *res, int count) {
 		} else if (result < 0) {
 			upper = i - 1;
 		} else {
-			return -1;
+			return i; /* element found */
 		}
 	}
 	return i;

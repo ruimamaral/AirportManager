@@ -69,11 +69,12 @@ typedef struct {
 */
 typedef struct {
 	hashtable flt_ht;
-	int flt_amount;
+	int flt_amount; /* ja tenho esta info na hashtable */
 	flight *srtd_flt_array[MAX_FLT];
 	flight *flt_array[MAX_FLT];
 	int srtd_flt_amount;
 	hashtable res_ht;
+	void *ts;
 } info;
 
 typedef struct{
