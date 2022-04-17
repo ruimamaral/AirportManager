@@ -52,11 +52,11 @@ void add_flight(info *global_info, flight *flt) {
  */
 int invalid_flt_args(info *global_info, flight *new_f) {
 	hashtable *flt_ht = global_info->flt_ht;
-	void *ts = global_info->ts;
+	char *key = make_flt_key(new_f->code, new_f->date);
 
 	if (invalid_flt_code(new_f->code)) {
 		printf("invalid flight code\n");
-	} else if (get_from_ht(new_f->code, flt_ht, ts, get_key_flt)) {
+	} else if (get_from_ht(key, flt_ht, global_info->ts, get_key_flt)) {
 		printf("flight already exists\n");
 	} else if (!is_airport(new_f->origin)) {
 		printf("%s: no such airport ID\n", new_f->origin);
@@ -71,8 +71,10 @@ int invalid_flt_args(info *global_info, flight *new_f) {
 	} else if (new_f->cap < MIN_CAP) {
 		printf("invalid capacity\n");
 	} else {
+		free(key);
 		return FALSE;
 	} 
+	free(key);
 	return TRUE;
 }
  
@@ -274,8 +276,9 @@ int remove_flight(info *global_info, char code[]) {
 	hashtable *flt_ht = global_info->flt_ht;
 	hashtable *res_ht = global_info->res_ht;
 	int i, success = FALSE;
-
+	
 	for (i = 0; i < flt_ht->amount; i++) {
+		printf("%ld %d/n", flt_ht->amount, i);
 		if (!strcmp(code, flt_array[i]->code)){
 			flt = flt_array[i];
 			remove_from_ht(flt, flt_ht, ts, get_key_flt);
