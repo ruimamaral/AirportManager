@@ -36,7 +36,7 @@ typedef struct {
 	int min;
 } timestamp;
 
-typedef struct {
+typedef struct{
 	char code[FLIGHT_CODE_LENGTH];
 	char origin[AP_ID_LENGTH];
 	char destin[AP_ID_LENGTH];
@@ -46,7 +46,7 @@ typedef struct {
 	int pass_n;
 	int res_n;
 	int array_index;
-	reservation **res_array;
+	struct reservation **res_array;
 } flight;
 /*
 typedef struct flt_node {
@@ -56,7 +56,7 @@ typedef struct flt_node {
 
 typedef struct node *flt_link;
 */
-typedef struct {
+typedef struct reservation{
 	char *code;
 	flight *flt;
 	int pass_n;
@@ -67,6 +67,13 @@ typedef struct {
 	flt_link tail;
 } flt_linked_lst;
 */
+typedef struct{
+	long size;
+	int size_n;
+	void **array;
+	long amount;
+} hashtable;
+
 typedef struct {
 	hashtable *flt_ht;
 	flight *srtd_flt_array[MAX_FLT];
@@ -75,13 +82,6 @@ typedef struct {
 	hashtable *res_ht;
 	void *ts;
 } info;
-
-typedef struct{
-	long size;
-	int size_n;
-	void **array;
-	long amount;
-} hashtable;
 
 extern timestamp global_date;
 
@@ -92,13 +92,13 @@ extern timestamp global_date;
 
 int command_listener(char);
 void exec_add_airport();
-void exec_list_airports();
+void exec_list_airports(info*);
 void exec_add_flight();
 void exec_list_departing_flts();
 void exec_list_arriving_flts();
 void exec_set_time();
-void exec_add_reservation(info);
-void exec_remove_item(info);
+void exec_add_reservation(info*);
+void exec_remove_item(info*);
 int isupper_str(char[]);
 void *my_alloc(unsigned);
 
@@ -107,28 +107,28 @@ void *my_alloc(unsigned);
 void add_airport(char[], char[], char[]);
 int invalid_ap_args(char[]);
 airport find_airport(char[]);
-void print_ap_info(airport);
+void print_ap_info(info*, airport);
 void list_airports();
 int is_airport(char[]);
 void sort_airports();
 
 /* flights.c */
 
-void add_flight(info, flight*);
-int invalid_flt_args(info, flight*);
+void add_flight(info*, flight*);
+int invalid_flt_args(info*, flight*);
 flight *get_flight(char[], timestamp);
-void list_flights(info);
-void list_departing_flights(info);
-void list_arriving_flights(info);
+void list_flights(info*);
+void list_departing_flights(info*);
+void list_arriving_flights(info*);
 int invalid_flt_code(char[]);
 int invalid_duration(int, int);
-int get_flts_departing(char[], info);
-void get_flts_arriving(char[], info);
+void get_flts_departing(info*, char[]);
+void get_flts_arriving(info*, char[]);
 timestamp get_date_arrival(flight*);
-void sort_flights(info);
+void sort_flights(info*);
 char *get_key_flt(void*);
 char *make_flt_key(char[], timestamp);
-int remove_flight(info, char[]);
+int remove_flight(info*, char[]);
 
 /* dates.c */
 
@@ -142,21 +142,21 @@ int datecmp(timestamp, timestamp);
 /* reservations.c */
 
 int add_reservation(info, char[], int, int, int, char[], int);
-void store_res(info, reservation*, flight*);
+void store_res(info*, reservation*, flight*);
 int list_reservations(char[], int, int, int);
 reservation *create_res(char[], flight*, int);
 void print_res_error(int, char[], char[]);
 int check_res_code(char[]);
-int remove_reservation(info, char[]);
+int remove_reservation(info*, char[]);
 hashtable *init_ht(int);
 long hash_str1(char[], int, long);
 long hash_str2(char[], int, long);
 long get_size(int, int);
 char *get_key_res(void*);
-void insert_ht(void*, hashtable*, void*, char*);
+void insert_ht(void*, hashtable*, void*, char* (*)(void*));
 void expand_ht(hashtable*, void*, char*);
-void remove_from_ht(void*, hashtable*, void*, char*);
-void *get_from_ht(char[], hashtable*, void*, char*);
+void remove_from_ht(void*, hashtable*, void*, char* (*)(void*));
+void *get_from_ht(char[], hashtable*, void*, char* (*)(void*));
 int get_res_index(reservation**, reservation*, int);
 void rem_from_array(void**, int, int);
 void add_to_array(void**, int, void*, int);

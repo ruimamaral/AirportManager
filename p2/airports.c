@@ -69,18 +69,20 @@ airport find_airport(char id[]) {
  * Receives an airport id and prints relevant info about
  * that specific airport.
  */
-void print_ap_info(airport ap) {
-	int n_f = get_flts_departing(ap.id);
+void print_ap_info(info *global_info, airport ap) {
+	int n_f;
+	get_flts_departing(global_info, ap.id);
+	n_f = global_info->srtd_flt_amount;
 	printf("%s %s %s %d\n", ap.id, ap.city, ap.country, n_f);
 }
 
 /*
  * Prints relevant info of all the airports currently in the system.
  */
-void list_airports() {
+void list_airports(info *global_info) {
 	int i;
 	for (i = 0; i < global_airport_amount; i++) {
-		print_ap_info(global_airport_list[i]);
+		print_ap_info(global_info, global_airport_list[i]);
 	}
 }
 

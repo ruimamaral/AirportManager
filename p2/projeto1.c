@@ -13,14 +13,14 @@
 
 
 int main(){
-	/* makes a random pointer to be used as a tombstone in the hashtables */
-	int *tombstone = 69;
+	int tombstone = 69;
 	info *global_info;
 	global_info->flt_ht = init_ht(-1);
 	global_info->res_ht = init_ht(0);
 	global_info->flt_amount = 0; /* ja tenho esta info na hashtable */
 	global_info->srtd_flt_amount = 0;
-	global_info->ts = tombstone;
+	/* uses a random pointer to serve as a tombstone in the hashtables */
+	global_info->ts = &tombstone;
 	while (command_listener(global_info, getchar())) {}
 	return 0;
 }
@@ -37,7 +37,7 @@ int command_listener(info *global_info, char command) {
 			exec_add_airport();
 			return 1;
 		case 'l':
-			exec_list_airports();
+			exec_list_airports(global_info);
 			return 1;
 		case 'v':
 			exec_add_flight();
@@ -53,6 +53,9 @@ int command_listener(info *global_info, char command) {
 			return 1;
 		case 'r':
 			exec_add_reservation(global_info);
+			return 1;
+		case 'e':
+			exec_remove_item(global_info);
 			return 1;
 	}
 	return 1;
@@ -79,7 +82,7 @@ void exec_add_airport() {
  * Fetches and lists info about given airports.
  * With no arguments prints info of every airport in the system.
  */
-void exec_list_airports() {
+void exec_list_airports(info global_info) {
 	char c = getchar(), id[AP_IDLENGTH];
 
 	if (c == ' ') {
@@ -89,13 +92,13 @@ void exec_list_airports() {
 			if (!is_airport(id)) {
 				printf("%s: no such airport ID\n", id);	
 			} else {
-				print_ap_info(find_airport(id));
+				print_ap_info(global_info, find_airport(id));
 			}
 			c = getchar();
 		}
 	} else {
 		sort_airports();
-		list_airports();
+		list_airports(global_info);
 	}
 }
 

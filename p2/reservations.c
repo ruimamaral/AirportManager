@@ -29,7 +29,7 @@ int add_reservation(info *glb_info, char flt_code[], int d,
 	return 0;
 }
 
-void store_res(info global_info, reservation *res, flight *flt) {
+void store_res(info *global_info, reservation *res, flight *flt) {
 	int i = get_res_index(res, flt->res_array, flt->res_n);
 
 	insert_ht(res, global_info->res_ht, global_info->ts, get_key_res);
@@ -68,17 +68,17 @@ reservation *create_res(char code[], flight *flt, int pass_n) {
 }
 
 void print_res_error(int error, char flt[], char res[]) {
-	if (error =  -1) {
+	if (error ==  -1) {
 		printf("\n");
-	} else if (error = -2) {
+	} else if (error == -2) {
 		printf("\n");
-	} else if (error = -3) {
+	} else if (error == -3) {
 		printf("\n");
-	} else if (error = -4) {
+	} else if (error == -4) {
 		printf("\n");
-	} else if (error = -5) {
+	} else if (error == -5) {
 		printf("\n");
-	} else if (error = -6) {
+	} else if (error == -6) {
 		printf("\n");
 	}
 }
@@ -94,7 +94,7 @@ int check_res_code(char code[]) {
 	return i;
 }
 
-int remove_reservation(info global_info, char code[]) {
+int remove_reservation(info *global_info, char code[]) {
 	hashtable *res_ht = global_info->res_ht;
 	reservation *res;
 	flight *flt;
@@ -175,9 +175,10 @@ char *get_key_res(void *ptr) {
 }
 
 void insert_ht(void *ptr, hashtable *ht, void *ts, char* get_key(void*)) { /* maybe this brokey */
-	char *key = get_key(ptr);
-	long i = hash_str1(key);
-	long k = hash_str2(key);
+	char key[] = get_key(ptr);
+	int len_key = strlen(key);
+	long i = hash_str1(key, len_key, ht->size);
+	long k = hash_str2(key, len_key, ht->size);
 
 	while(ht->array[i] && ht->array[i] != ts) {
 		i = (i + k) % ht->size;
@@ -207,13 +208,14 @@ void expand_ht(hashtable *ht, void *ts, char* get_key(void*)) {
 			insert_ht(old_array[i], ht, ts, get_key); /* ver se funciona a passagem de funcao */
 		}
 	free(old_array);
+	}
 }
 
 void remove_from_ht(void *ptr, hashtable *ht, void *ts, char* get_key(void*)) {
-	char *key = get_key(ptr);
-	long i = hash_str1(key);
-	long k = hash_str2(key);
-	void *temp;
+	char key[] = get_key(ptr);
+	int len_key = strlen(key);
+	long i = hash_str1(key, len_key, ht->size);
+	long k = hash_str2(key, len_key, ht->size);
 
 	while(strcmp(get_key(ht->array[i]), key)) {
 		i = (i + k) % ht->size;
@@ -223,9 +225,10 @@ void remove_from_ht(void *ptr, hashtable *ht, void *ts, char* get_key(void*)) {
 }
 
 void *get_from_ht(char key[], hashtable *ht, void *ts, char* get_key(void*)) {
-	long i = hash_str1(key);
-	long k = hash_str2(key);
-	void **array = hs->array;
+	int len_key = strlen(key);
+	long i = hash_str1(key, len_key, ht->size);
+	long k = hash_str2(key, len_key, ht->size);
+	void **array = ht->array;
 
 	while(array[i] && (array[i] == ts || strcmp(get_key(array[i]), key))) {
 		i = (i + k) % ht->size;
