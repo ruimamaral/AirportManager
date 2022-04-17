@@ -14,8 +14,10 @@
 
 int main(){
 	info *global_info;
-	global_info->flt_lst = init_flt_list();
-	global_info->hashtable = init_hashtable();
+	global_info->flt_ht = init_ht(-1);
+	global_info->res_ht = init_ht(0);
+	global_info->flt_amount = 0;
+	global_info->srtd_flt_amount = 0;
 	while (command_listener(global_info, getchar())) {}
 	return 0;
 }
@@ -189,6 +191,23 @@ void exec_add_reservation(info global_info) {
 	if (error) {
 		print_res_error(error, flt_code, res_code);
 	}
+}
+
+void exec_remove_item(info global_info) {
+	char buffer[MAX_CMD_LEN], *code, *key;
+	int len = strlen(buffer), success = 0;
+
+	code = (char*) my_alloc(len);
+
+	if (len == FLIGHT_CODE_LENGTH - 1) {
+		success = remove_flight(global_info, code);
+	} else if (len >= 10) {
+		success = remove_reservation(global_info, code);
+	}
+	if (!success) {
+		printf("not found\n");
+	}
+	free(code);
 }
 
 /*

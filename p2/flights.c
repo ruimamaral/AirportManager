@@ -255,10 +255,28 @@ char *get_key_flt(void *ptr) {
 }
 
 char *make_flt_key(char *code) {
-	int key_len = FLIGHT_CODE_LENGTH * 4;
+	int key_len = (FLIGHT_CODE_LENGTH - 1) * 2;
 	char *key = (char*) my_alloc(key_len);
 
-	snprintf(key, key_len, "%s%s%s%s", code, code, code, code);
+	snprintf(key, key_len, "%s%s", code, code);
 
 	return key;
+}
+
+int remove_flight(info global_info, char *code) {
+	flight *flt;
+	flight **flt_ht = global_info->flt_ht, flt_array = global_info->flt_array;
+	char *key = make_flt_key(code);
+
+	while (flt = (flight*) get_from_ht(key, flt_ht, get_key_flt)) {
+		remove_from_ht(flt, flt_ht, get_key_flt);
+		global_info->flt_amount--;
+		/* iterates from the end to the beginning */
+		for(i = flt->res_n - 1; i >= 0; i--) {
+			remove_reservation(flt->res_array[i]);
+		}
+		rem_from_array(flt_array, flt->array_index, global_info->flt_amount--);
+		free(flt->res_array);
+		free(flt);
+	}
 }

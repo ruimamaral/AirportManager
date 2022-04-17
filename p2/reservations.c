@@ -97,6 +97,29 @@ int check_res_code(char code[]) {
 	return i;
 }
 
+int remove_reservation(info global_info, char* code) {
+	reservation **res_ht = global_info->res_ht;
+	reservation *res;
+	flight *flt;
+	int i;
+
+	if (res = (reservation*) get_from_ht(code, res_ht, get_key_res)) {
+		flt = res->flt;
+		remove_from_ht(res, res_ht, get_key_res);
+		/* iterates from the end to the beginning */
+		for (i = flt->res_n - 1; i >= 0; i--) {
+			if(!strcmp(code, flt->res_array[i]->code)) {
+				rem_from_array(flt->res_array, i, flt->res_n--);
+				break;
+			}
+		}
+		free(res->code);
+		free(res);
+		return TRUE;
+	}
+	return FALSE;
+}
+
 hashtable *init_ht(int size_n) {
 	hashtable *hashtable = (hashtable*) my_alloc(sizeof(hashtable));
 	long size = get_size(size_n);
@@ -135,12 +158,15 @@ long get_size(int size_n, int size) {
 	long sum;
 
 	static const int size_array[] = {
-		6151, 12289, 24593, 49157, 98317, 196613, 393241,
-		786433, 1572869, 3145739, 6291469, 12582917, 25165843,
-		50331653, 100663319, 201326611, 402653189, 805306457, 1610612741
+		24593, 49157, 98317, 196613, 393241, 786433,
+		1572869, 3145739, 6291469, 12582917, 25165843, 50331653,
+		100663319, 201326611, 402653189, 805306457, 1610612741
 	};
-	if (size_n > 18) {
+	if (size_n > 16) {
 		return 2 * size + 1;
+	}
+	if (size_n < 0) {
+		return 60000;
 	}
 	return size_array[i];
 }
@@ -180,21 +206,19 @@ void expand_ht(hashtable *ht, char* get_key(void*)) {
 
 	for (i = 0; i < old_size; i++) {
 		if (old_array[i]) {
-			insert_ht(old_array[i], ht, get_key_res); /* ver se funciona a passagem de funcao */
+			insert_ht(old_array[i], ht, get_key); /* ver se funciona a passagem de funcao */
 		}
 	free(old_array);
 }
 
-int remove_from_ht(char *key, hashtable *ht, char* get_key(void*)) {
+void remove_from_ht(void *ptr, hashtable *ht, char* get_key(void*)) {
+	char *key = get_key(ptr);
 	long i = hash_str1(key);
 	long k = hash_str2(key);
 	void *temp;
 
 	while(strcmp(get_key(ht->array[i]), key) && ht->array[i]) {
 		i = (i + k) % ht->size;
-	}
-	if(!ht->array[i]) {
-		return FALSE;
 	}
 	ht->array[i] = NULL;
 	--ht->amount;
@@ -206,7 +230,6 @@ int remove_from_ht(char *key, hashtable *ht, char* get_key(void*)) {
 		insert_ht(temp, ht, get_key);
 		i = (i + k) % ht->size;
 	}
-	return TRUE;
 }
 
 void *get_from_ht(char *key, hashtable *ht, char* get_key(void*)) {
@@ -238,7 +261,7 @@ int get_res_index(reservation **res_array, reservation *res, int count) {
 	return i;
 }
 
-void remove_from_array(void **array, int index, int count) {
+void rem_from_array(void **array, int index, int count) {
 	while(index < count - 1) {
 		array[index] = array[index + 1];
 		index++;
