@@ -94,7 +94,7 @@ int check_res_code(char code[]) {
 	return i;
 }
 
-int remove_reservation(info global_info, char* code) {
+int remove_reservation(info global_info, char code[]) {
 	hashtable *res_ht = global_info->res_ht;
 	reservation *res;
 	flight *flt;
@@ -132,7 +132,7 @@ hashtable *init_ht(int size_n) {
 	return hashtable;
 }
 
-long hash_str1(char *code, int length, long size) {
+long hash_str1(char code[], int length, long size) {
 	long hash = 0;
 	int max_index = length - 1;
 	for (i = 1; i < 10; i++) {
@@ -141,7 +141,7 @@ long hash_str1(char *code, int length, long size) {
 	return hash % size;
 }
 
-long hash_str2(char *code, int length, long size) {
+long hash_str2(char code[], int length, long size) {
 	long hash = 0;
 	int max_index = length - 1;
 	for (i = 1; i < 8; i++) {
@@ -222,7 +222,7 @@ void remove_from_ht(void *ptr, hashtable *ht, void *ts, char* get_key(void*)) {
 	--ht->amount;
 }
 
-void *get_from_ht(char *key, hashtable *ht, void *ts, char* get_key(void*)) {
+void *get_from_ht(char key[], hashtable *ht, void *ts, char* get_key(void*)) {
 	long i = hash_str1(key);
 	long k = hash_str2(key);
 	void **array = hs->array;
@@ -259,7 +259,7 @@ void rem_from_array(void **array, int index, int count) {
 	}
 }
 
-void add_to_array(void **array, int index, void* ptr, int count) {
+void add_to_array(void **array, int index, void *ptr, int count) {
 	while(count > i) {
 		array[count] = array[count - 1];
 		--count;

@@ -97,7 +97,10 @@ void exec_add_flight();
 void exec_list_departing_flts();
 void exec_list_arriving_flts();
 void exec_set_time();
+void exec_add_reservation(info);
+void exec_remove_item(info);
 int isupper_str(char[]);
+void *my_alloc(unsigned);
 
 /* airports.c */
 
@@ -111,18 +114,21 @@ void sort_airports();
 
 /* flights.c */
 
-int invalid_flt_args(flight, timestamp);
-void add_flight(flight, timestamp);
+void add_flight(info, flight*);
+int invalid_flt_args(info, flight*);
 flight *get_flight(char[], timestamp);
-void list_flights();
-void list_departing_flights();
-void list_arriving_flights();
+void list_flights(info);
+void list_departing_flights(info);
+void list_arriving_flights(info);
 int invalid_flt_code(char[]);
 int invalid_duration(int, int);
-int get_flts_departing(char[]);
-void get_flts_arriving(char[]);
-timestamp get_date_arrival(flight);
-void sort_flights();
+int get_flts_departing(char[], info);
+void get_flts_arriving(char[], info);
+timestamp get_date_arrival(flight*);
+void sort_flights(info);
+char *get_key_flt(void*);
+char *make_flt_key(char[], timestamp);
+int remove_flight(info, char[]);
 
 /* dates.c */
 
@@ -132,3 +138,25 @@ timestamp unix_to_regular(int);
 int invalid_date(timestamp);
 int same_day(timestamp, timestamp);
 int datecmp(timestamp, timestamp);
+
+/* reservations.c */
+
+int add_reservation(info, char[], int, int, int, char[], int);
+void store_res(info, reservation*, flight*);
+int list_reservations(char[], int, int, int);
+reservation *create_res(char[], flight*, int);
+void print_res_error(int, char[], char[]);
+int check_res_code(char[]);
+int remove_reservation(info, char[]);
+hashtable *init_ht(int);
+long hash_str1(char[], int, long);
+long hash_str2(char[], int, long);
+long get_size(int, int);
+char *get_key_res(void*);
+void insert_ht(void*, hashtable*, void*, char*);
+void expand_ht(hashtable*, void*, char*);
+void remove_from_ht(void*, hashtable*, void*, char*);
+void *get_from_ht(char[], hashtable*, void*, char*);
+int get_res_index(reservation**, reservation*, int);
+void rem_from_array(void**, int, int);
+void add_to_array(void**, int, void*, int);

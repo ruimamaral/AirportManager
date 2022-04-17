@@ -254,7 +254,7 @@ char *get_key_flt(void *ptr) {
 	return make_flt_key(flt->code, flt->date);
 }
 
-char *make_flt_key(char *code, timestamp date) {
+char *make_flt_key(char code[], timestamp date) {
 	int key_len = FLIGHT_CODE_LENGTH + 2 + 2 + 4;
 	char *key = (char*) my_alloc(key_len);
 
@@ -263,7 +263,7 @@ char *make_flt_key(char *code, timestamp date) {
 	return key;
 }
 
-int remove_flight(info global_info, char *code) {
+int remove_flight(info global_info, char code[]) {
 	flight *flt;
 	hashtable *flt_ht = global_info->flt_ht, flt_array = global_info->flt_array;
 	char *key = make_flt_key(code);
