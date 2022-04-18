@@ -44,10 +44,10 @@ int command_listener(info *global_info, char command) {
 			exec_add_flight();
 			return 1;
 		case 'p':
-			exec_list_departing_flts();
+			exec_list_departing_flts(global_info);
 			return 1;
 		case 'c':
-			exec_list_arriving_flts();
+			exec_list_arriving_flts(global_info);
 			return 1;
 		case 't':
 			exec_set_time();
