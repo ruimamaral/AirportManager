@@ -282,9 +282,9 @@ int remove_flight(info *global_info, char code[]) {
 		if (!strcmp(code, flt->code)) {
 			remove_from_ht(flt, flt_ht, ts, get_key_flt);
 			for(j = flt->res_n - 1; j >= 0; j--) {
-				remove_from_ht(flt->res_array[i], res_ht, ts, get_key_res);
-				free(flt->res_array[i]->code);
-				free(flt->res_array[i]);
+				remove_from_ht(flt->res_array[j], res_ht, ts, get_key_res);
+				free(flt->res_array[j]->code);
+				free(flt->res_array[j]);
 			}
 			rem_flt_array(flt_array, flt->array_index, flt_ht->amount + 1);
 			i--;

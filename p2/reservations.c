@@ -36,6 +36,7 @@ int add_reservation(info *global_info, char flt_code[], int d,
 void store_res(info *global_info, reservation *res, flight *flt) {
 	int i = get_res_index(flt->res_array, res, flt->res_n);
 
+	printf("index %d, %s\n", i, res->code);
 	insert_ht(res, global_info->res_ht, global_info->ts, get_key_res);
 	add_res_array(flt->res_array, i, res, flt->res_n++);
 	flt->pass_n += res->pass_n;
@@ -146,20 +147,20 @@ hashtable *init_ht(int size_n) {
 	return ht;
 }
 
-long hash_str1(char code[], int length, long size) {
+long hash_str1(char str[], int length, long size) {
 	long hash = 0;
 	int i, max_index = length - 1;
 	for (i = 1; i < 10; i++) {
-		hash = hash*23 + code[max_index - max_index/i];
+		hash = hash*23 + str[max_index - max_index/i];
 	}
 	return hash % size;
 }
 
-long hash_str2(char code[], int length, long size) {
+long hash_str2(char str[], int length, long size) {
 	long hash = 0;
 	int i, max_index = length - 1;
 	for (i = 1; i < 8; i++) {
-		hash = hash*31 + code[(int) (max_index * (1 - 0.083 * i))];
+		hash = hash*31 + str[(int) (max_index * (1 - 0.083 * i))];
 	}
 	return hash % size + 1; /* shouldnt ever be 0 */
 }
@@ -232,16 +233,21 @@ void remove_from_ht(void *ptr, hashtable *ht, void *ts, char* get_key(void*)) {
 	long i = hash_str1(key1, len_key, ht->size);
 	long k = hash_str2(key1, len_key, ht->size);
 
-	key2 = get_key(ht->array[i]);
-	while (strcmp(key2, key1)) {
-		i = (i + k) % ht->size;
-		free(key2);
+	while (TRUE) {
+		if (ht->array[i] == ts) {
+			i = (i + k) % ht->size;
+			continue;
+		};
 		key2 = get_key(ht->array[i]);
+		if (!strcmp(key2, key1)) {
+			break;
+		}
+		free(key2);
+		i = (i + k) % ht->size;
 	}
 	ht->array[i] = ts;
 	--ht->amount;
 	free(key1);
-	free(key2);
 }
 
 void *get_from_ht(char key[], hashtable *ht, void *ts, char* get_key(void*)) {
@@ -272,6 +278,7 @@ int get_res_index(reservation **res_array, reservation *res, int count) {
 			return i; /* element found */
 		}
 	}
+	printf("index %d, %s\n", i, res->code);
 	return i;
 }
 
