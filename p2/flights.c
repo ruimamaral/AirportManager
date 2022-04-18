@@ -37,7 +37,6 @@ void add_flight(info *global_info, flight *flt) {
 	flt->res_array = (reservation**) my_alloc(flt->cap * sizeof(reservation));
 	flt->res_n = 0;
 	flt->pass_n = 0;
-	flt->array_index = global_info->flt_ht->amount;
 
 	global_info->flt_array[global_info->flt_ht->amount] = flt;
 
@@ -286,7 +285,7 @@ int remove_flight(info *global_info, char code[]) {
 				free(flt->res_array[j]->code);
 				free(flt->res_array[j]);
 			}
-			rem_flt_array(flt_array, flt->array_index, flt_ht->amount + 1);
+			rem_flt_array(flt_array, i, flt_ht->amount + 1);
 			i--;
 			free(flt->res_array);
 			free(flt);

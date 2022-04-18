@@ -45,7 +45,6 @@ typedef struct{
 	int cap;
 	int pass_n;
 	int res_n;
-	int array_index;
 	struct reservation **res_array;
 } flight;
 /*

@@ -119,6 +119,7 @@ int remove_reservation(info *global_info, char code[]) {
 		for (i = flt->res_n - 1; i >= 0; i--) {
 			if (!strcmp(code, flt->res_array[i]->code)) {
 				rem_res_array(flt->res_array, i, flt->res_n--);
+				flt->pass_n -= res->pass_n;
 				break;
 			}
 		}
