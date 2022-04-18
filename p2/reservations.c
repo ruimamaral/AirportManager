@@ -290,7 +290,6 @@ int get_res_index(reservation **res_array, reservation *res, int count) {
 			return i; /* element found */
 		}
 	}
-	printf("index %d, %s\n", i, res->code);
 	return i;
 }
 

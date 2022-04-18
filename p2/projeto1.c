@@ -119,10 +119,12 @@ void exec_add_flight(info *global_info) {
 			&new_f->date.min, &new_f->dura.h, &new_f->dura.min, &new_f->cap);
 
 		if (invalid_flt_args(global_info, new_f)) {
+			free(new_f);
 			return;
 		}
 		add_flight(global_info, new_f);
 	} else {
+		free(new_f);
 		list_flights(global_info);
 	}
 }
