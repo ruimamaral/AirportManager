@@ -254,8 +254,8 @@ void free_mem(info *global_info) {
 	for (i = 0 ;i < flt_n; i++) {
 		flt = flt_array[i];
 		for(j = 0; j < flt->res_n; j++) {
-			free(flt->res_array[i]->code);
-			free(flt->res_array[i]);
+			free(flt->res_array[j]->code);
+			free(flt->res_array[j]);
 		}
 		free(flt->res_array);
 		free(flt);
