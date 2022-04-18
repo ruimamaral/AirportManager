@@ -2,17 +2,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 int add_reservation(info *global_info, char flt_code[], int d,
 					int m, int y, char buff[], int pass_n) {
 	hashtable *flt_ht = global_info->flt_ht, *res_ht = global_info->res_ht;
 	void *ts = global_info->ts;
-	int len;
+	int len = check_res_code(buff);
 	timestamp date = create_date(y, m, d, 0, 0);
 	char *final_res_code, *key = make_flt_key(flt_code, date);
 	flight *flt = (flight*) get_from_ht(key, flt_ht, ts, get_key_flt);
 
-	if ((len = check_res_code(buff)) == -1 || len < 10) {
+	if (len == -1 || len < 10) {
 		return -1;
 	} else if (!flt) {
 		return -2;
@@ -95,8 +96,8 @@ int check_res_code(char code[]) {
 	int i = 0;
 	char c;
 
-	for (c = code[i] = 0; c; c = code[++i]) {
-		if (!((c <= 'Z' && c >= 'A') || (c <= '9' && c >= '0'))) {
+	for (c = code[i]; c; c = code[++i]) {
+		if (!((isupper(c) || isdigit(c)))) {
 			return -1;
 		}
 	}
@@ -192,12 +193,10 @@ void insert_ht(void *ptr, hashtable *ht, void *ts, char* get_key(void*)) { /* ma
 	int len_key = strlen(key);
 	long i = hash_str1(key, len_key, ht->size);
 	long k = hash_str2(key, len_key, ht->size);
-	printf("%ld insert ht \n",i);
 
 	while (ht->array[i] && ht->array[i] != ts) {
 		i = (i + k) % ht->size;
 	}
-	printf("%ld insert ht \n",i);
 	ht->array[i] = ptr;
 
 	if (++ht->amount > ht->size * 2 / 3) {
@@ -233,9 +232,11 @@ void remove_from_ht(void *ptr, hashtable *ht, void *ts, char* get_key(void*)) {
 	long i = hash_str1(key1, len_key, ht->size);
 	long k = hash_str2(key1, len_key, ht->size);
 
-	while (strcmp(key2 = get_key(ht->array[i]), key1)) {
+	key2 = get_key(ht->array[i]);
+	while (strcmp(key2, key1)) {
 		i = (i + k) % ht->size;
 		free(key2);
+		key2 = get_key(ht->array[i]);
 	}
 	ht->array[i] = ts;
 	--ht->amount;
@@ -248,19 +249,17 @@ void *get_from_ht(char key[], hashtable *ht, void *ts, char* get_key(void*)) {
 	long i = hash_str1(key, len_key, ht->size);
 	long k = hash_str2(key, len_key, ht->size);
 	void **array = ht->array;
-	printf("%ld get from ht \n",i);
 
 	while (array[i] && (array[i] == ts || strcmp(get_key(array[i]), key))) {
 		i = (i + k) % ht->size;
 	}
-	printf("%ld get from ht \n",i);
 	return ht->array[i];
 }
 
 int get_res_index(reservation **res_array, reservation *res, int count) {
 	int upper = count - 1;
 	int lower = 0;
-	int i, result; /* maybe initialize i */
+	int i = 0, result;
 
 	while (upper >= lower) {
 		i = (upper + lower) / 2;

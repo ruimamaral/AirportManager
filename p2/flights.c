@@ -39,7 +39,7 @@ void add_flight(info *global_info, flight *flt) {
 	flt->pass_n = 0;
 	flt->array_index = global_info->flt_ht->amount;
 
-	global_info->flt_array[flt->array_index] = flt;
+	global_info->flt_array[global_info->flt_ht->amount] = flt;
 
 	insert_ht(flt, global_info->flt_ht, global_info->ts, get_key_flt);
 }
@@ -275,14 +275,14 @@ int remove_flight(info *global_info, char code[]) {
 	void *ts = global_info->ts;
 	hashtable *flt_ht = global_info->flt_ht;
 	hashtable *res_ht = global_info->res_ht;
-	int i, success = FALSE;
-	
-	for (i = 0; i < flt_ht->amount; i++) {
-		printf("%ld %d/n", flt_ht->amount, i);
-		if (!strcmp(code, flt_array[i]->code)){
-			flt = flt_array[i];
+	int i = 0,j ,success = FALSE;
+
+	for (i = 0 ;i < flt_ht->amount; i++) {
+		flt = flt_array[i];
+		if (!strcmp(code, flt->code)) {
 			remove_from_ht(flt, flt_ht, ts, get_key_flt);
-			for(i = flt->res_n - 1; i >= 0; i--) {
+			for(j = flt->res_n - 1; j >= 0; j--) {
+				printf("%s\n", flt->res_array[i]->code);
 				remove_from_ht(flt->res_array[i], res_ht, ts, get_key_res);
 				free(flt->res_array[i]->code);
 				free(flt->res_array[i]);

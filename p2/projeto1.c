@@ -189,11 +189,11 @@ void exec_add_reservation(info *global_info) {
 
 	scanf("%s %d-%d-%d", flt_code, &day, &month, &year);
 	if (getchar() == ' ') {
+		scanf("%s %d", res_code, &pass_n);
+		error = add_reservation(global_info, flt_code, day, month, year, res_code, pass_n);
+	} else {
 		error = list_reservations(global_info, flt_code, day, month, year);
 		res_code[0] = '\0'; /* maybe brokey */
-	} else {
-		scanf("%s%d", res_code, &pass_n);
-		error = add_reservation(global_info, flt_code, day, month, year, res_code, pass_n);
 	}
 	if (error) {
 		print_res_error(error, flt_code, res_code);
@@ -246,11 +246,17 @@ void *my_alloc(unsigned size) {
 
 void free_mem(info *global_info) {
 	flight **flt_array = global_info->flt_array;
-	int i, flt_n = global_info->flt_ht->amount;
+	flight *flt;
+	int i, j, flt_n = global_info->flt_ht->amount;
 
-	for (i = 0; i < flt_n; i++) {
-		free(flt_array[i]->res_array);
-		free(flt_array[i]);
+	for (i = 0 ;i < flt_n; i++) {
+		flt = flt_array[i];
+		for(j = 0; j < flt->res_n; j++) {
+			free(flt->res_array[i]->code);
+			free(flt->res_array[i]);
+		}
+		free(flt->res_array);
+		free(flt);
 	}
 	free(global_info->flt_ht->array);
 	free(global_info->res_ht->array);
