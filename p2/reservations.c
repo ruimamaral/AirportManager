@@ -13,6 +13,7 @@ int add_reservation(info *global_info, char flt_code[], int d,
 	char *final_res_code, *key = make_flt_key(flt_code, date);
 	flight *flt = (flight*) get_from_ht(key, flt_ht, ts, get_key_flt);
 
+	free(key);
 	if (len == -1 || len < 10) {
 		return -1;
 	} else if (!flt) {
@@ -29,7 +30,6 @@ int add_reservation(info *global_info, char flt_code[], int d,
 	final_res_code = (char*) my_alloc(len + 1);
 	strcpy(final_res_code, buff);
 	store_res(global_info, create_res(final_res_code, flt, pass_n), flt);
-	free(key);
 	return 0;
 }
 
