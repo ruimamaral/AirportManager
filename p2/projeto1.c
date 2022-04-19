@@ -41,7 +41,7 @@ int command_listener(info *global_info, char command) {
 			exec_list_airports(global_info);
 			return 1;
 		case 'v':
-			exec_add_flight();
+			exec_add_flight(global_info);
 			return 1;
 		case 'p':
 			exec_list_departing_flts(global_info);
