@@ -274,9 +274,9 @@ int remove_flight(info *global_info, char code[]) {
 	void *ts = global_info->ts;
 	hashtable *flt_ht = global_info->flt_ht;
 	hashtable *res_ht = global_info->res_ht;
-	int i = 0,j ,success = FALSE;
+	int i = 0, j ,success = FALSE;
 
-	for (i = 0 ;i < flt_ht->amount; i++) {
+	for (i = 0; i < flt_ht->amount; i++) {
 		flt = flt_array[i];
 		if (!strcmp(code, flt->code)) {
 			remove_from_ht(flt, flt_ht, ts, get_key_flt);

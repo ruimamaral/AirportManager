@@ -42,8 +42,6 @@ void store_res(info *global_info, reservation *res, flight *flt) {
 }
 
 int list_reservations(info *global_info, char flt_code[], int d, int m, int y) {
-	/* maybe utilizar capacidade do voo para ver se as reservas ja foram
-	 * todas encontradas (maybe por pointer para voo em cada reserva para n ter de procurar o voo) */
 	hashtable *flt_ht = global_info->flt_ht;
 	timestamp date = create_date(y, m, d, 0, 0);
 	int res_n, i;
@@ -109,20 +107,18 @@ int remove_reservation(info *global_info, char code[]) {
 	void *ts = global_info->ts;
 	reservation *res;
 	flight *flt;
-	int i;
+	int res_index;
 
 	res = (reservation*) get_from_ht(code, res_ht, ts, get_key_res);
 	if (res) {
 		flt = res->flt;
 		remove_from_ht(res, res_ht, global_info->ts, get_key_res);
-		/* iterates from the end to the beginning */
-		for (i = flt->res_n - 1; i >= 0; i--) {
-			if (!strcmp(code, flt->res_array[i]->code)) {
-				rem_res_array(flt->res_array, i, flt->res_n--);
-				flt->pass_n -= res->pass_n;
-				break;
-			}
-		}
+
+		res_index = get_res_index(flt->res_array, res, flt->res_n);
+
+		rem_res_array(flt->res_array, res_index, flt->res_n--);
+		flt->pass_n -= res->pass_n;
+
 		free(res->code);
 		free(res);
 		return TRUE;
@@ -189,7 +185,7 @@ char *get_key_res(void *ptr) {
 	return key;
 }
 
-void insert_ht(void *ptr, hashtable *ht, void *ts, char* get_key(void*)) { /* maybe this brokey */
+void insert_ht(void *ptr, hashtable *ht, void *ts, char* get_key(void*)) {
 	char *key = get_key(ptr);
 	int len_key = strlen(key);
 	long i = hash_str1(key, len_key, ht->size);
@@ -221,7 +217,7 @@ void expand_ht(hashtable *ht, void *ts, char* get_key(void*)) {
 
 	for (i = 0; i < old_size; i++) {
 		if (old_array[i] && old_array[i] != ts) {
-			insert_ht(old_array[i], ht, ts, get_key); /* ver se funciona a passagem de funcao */
+			insert_ht(old_array[i], ht, ts, get_key);
 		}
 	free(old_array);
 	}
