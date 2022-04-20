@@ -127,6 +127,7 @@ void list_departing_flights(info *global_info) {
 		printf("%s %s %02d-%02d-%d %02d:%02d\n",
 			flt->code, flt->destin, flt->date.d, flt->date.mth,
 		 	flt->date.y, flt->date.h, flt->date.min);
+		free(flt);
 	}
 }
 
@@ -143,6 +144,7 @@ void list_arriving_flights(info *global_info) {
 		printf("%s %s %02d-%02d-%d %02d:%02d\n",
 			flt->code, flt->origin, flt->date.d, flt->date.mth,
 		 	flt->date.y, flt->date.h, flt->date.min);
+		free(flt);
 	}
 }
 
@@ -180,16 +182,18 @@ int invalid_duration(int hours, int mins) {
  */
 void get_flts_departing(info *global_info, char id[]) {
 	int i;
-	flight *flt;
+	flight *flt1, *flt2;
 	flight **srtd_flt_array = global_info->srtd_flt_array;
 	int flt_amount = global_info->flt_ht->amount;
 
 	global_info->srtd_flt_amount = 0; /* resets counter */
 
 	for (i = 0; i < flt_amount; i++) {
-		flt = global_info->flt_array[i];
-		if (!strcmp(flt->origin, id)) {
-			srtd_flt_array[global_info->srtd_flt_amount++] = flt;
+		flt1 = global_info->flt_array[i];
+		if (!strcmp(flt1->origin, id)) {
+			flt2 = (flight*) my_alloc(sizeof(flight));
+			*flt2 = *flt1;
+			srtd_flt_array[global_info->srtd_flt_amount++] = flt2;
 		}
 	}
 }
@@ -201,19 +205,21 @@ void get_flts_departing(info *global_info, char id[]) {
  */
 void get_flts_arriving(info *global_info, char id[]) {
 	int i;
-	flight *flt;
+	flight *flt1, *flt2;
 	flight **srtd_flt_array = global_info->srtd_flt_array;
 	int flt_amount = global_info->flt_ht->amount;
 
 	global_info->srtd_flt_amount = 0; /* resets counter */
 
 	for (i = 0; i < flt_amount; i++) {
-		flt = global_info->flt_array[i];
-		if (!strcmp(flt->destin, id)) {
+		flt1 = global_info->flt_array[i];
+		if (!strcmp(flt1->destin, id)) {
 			/* changes flight date to its arrival date
 			 *  in preparation for the sorting*/
-			flt->date = get_date_arrival(flt);
-			srtd_flt_array[global_info->srtd_flt_amount++] = flt;
+			flt2 = (flight*) my_alloc(sizeof(flight));
+			*flt2 = *flt1;
+			flt2->date = get_date_arrival(flt2);
+			srtd_flt_array[global_info->srtd_flt_amount++] = flt2;
 		}
 	}
 }

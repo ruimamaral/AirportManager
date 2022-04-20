@@ -219,8 +219,8 @@ void expand_ht(hashtable *ht, void *ts, char* get_key(void*)) {
 		if (old_array[i] && old_array[i] != ts) {
 			insert_ht(old_array[i], ht, ts, get_key);
 		}
-	free(old_array);
 	}
+	free(old_array);
 }
 
 void remove_from_ht(void *ptr, hashtable *ht, void *ts, char* get_key(void*)) {
