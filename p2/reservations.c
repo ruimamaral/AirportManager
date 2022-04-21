@@ -1,9 +1,21 @@
+/*
+ * reservations.c
+ *
+ * Rui Amaral - ist103155
+ *
+ * File containing functions used to manage flight reservations.
+ *
+ */
+
 #include "projeto1.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 
+/*
+ * Function that adds a reservation to the system, checks arguments.
+ */
 int add_reservation(info *global_info, char flt_code[], int d,
 					int m, int y, char buff[], int pass_n) {
 	hashtable *flt_ht = global_info->flt_ht, *res_ht = global_info->res_ht;
@@ -33,14 +45,23 @@ int add_reservation(info *global_info, char flt_code[], int d,
 	return 0;
 }
 
+/*
+ * Stores new reservation on the different data structures.
+ */
 void store_res(info *global_info, reservation *res, flight *flt) {
 	int i = get_res_index(flt->res_array, res, flt->res_n);
 
 	insert_ht(res, global_info->res_ht, global_info->ts, get_key_res);
+	/* inserts pointers to reservations in the reservation pointer
+	 * array of its corresponding flight, sorted by the reservations'
+	 * code. */
 	add_res_array(flt->res_array, i, res, flt->res_n++);
 	flt->pass_n += res->pass_n;
 }
 
+/*
+ * Lists all reservations to a given flight if the flight exists.
+ */
 int list_reservations(info *global_info, char flt_code[], int d, int m, int y) {
 	hashtable *flt_ht = global_info->flt_ht;
 	timestamp date = create_date(y, m, d, 0, 0);
@@ -65,6 +86,9 @@ int list_reservations(info *global_info, char flt_code[], int d, int m, int y) {
 	return 0;
 }
 
+/*
+ * Creates a reservation type item.
+ */
 reservation *create_res(char code[], flight *flt, int pass_n) {
 	reservation *res = my_alloc(sizeof(reservation));
 
@@ -74,6 +98,9 @@ reservation *create_res(char code[], flight *flt, int pass_n) {
 	return res;
 }
 
+/*
+ * Prints out error messages for the 'r' and 'e' commands.
+ */
 void print_res_error(int error, char flt[], char res[]) {
 	if (error ==  -1) {
 		printf("invalid reservation code\n");
@@ -90,6 +117,10 @@ void print_res_error(int error, char flt[], char res[]) {
 	}
 }
 
+/*
+ * Checks if given reservstion code is valid, returning -1 if so.
+ * Returns the received string length otherwise.
+ */
 int check_res_code(char code[]) {
 	int i = 0;
 	char c;
@@ -102,6 +133,9 @@ int check_res_code(char code[]) {
 	return i;
 }
 
+/*
+ * Removes a reservation from the system.
+ */
 int remove_reservation(info *global_info, char code[]) {
 	hashtable *res_ht = global_info->res_ht;
 	void *ts = global_info->ts;
@@ -126,58 +160,10 @@ int remove_reservation(info *global_info, char code[]) {
 	return FALSE;
 }
 
-hashtable *init_ht(int size_n) {
-	hashtable *ht;	long size = get_size(size_n, 0);
-	int i;
-
-	ht = (hashtable*) my_alloc(sizeof(hashtable));
-
-	ht->size = size;
-	ht->size_n = size_n;
-	ht->array = (void**) my_alloc(sizeof(void*) * size);
-	ht->amount = 0;
-
-	for (i = 0; i < size; i++) {
-		ht->array[i] = NULL;
-	}
-	return ht;
-}
-
-long hash_str1(char str[], int length, long size) {
-	long hash = 0;
-	int i, max_index = length - 1;
-	for (i = 1; i < 10; i++) {
-		hash = hash*23 + str[max_index - max_index/i];
-	}
-	return hash % size;
-}
-
-long hash_str2(char str[], int length, long size) {
-	long hash = 0;
-	int i, max_index = length - 1;
-	for (i = 1; i < 8; i++) {
-		hash = hash*31 + str[(int) (max_index * (1 - 0.083 * i))];
-	}
-	return hash % size + 1; /* shouldnt ever be 0 */
-}
-
-long get_size(int size_n, int size) {
-
-	static const int size_array[] = {
-		24593, 49157, 98317, 196613, 393241, 786433,
-		1572869, 3145739, 6291469, 12582917, 25165843, 50331653,
-		100663319, 201326611, 402653189, 805306457, 1610612741
-	};
-	if (size_n > 16) {
-		return 2 * size + 1;
-	}
-	/* sets fixed size for flight array */
-	if (size_n < 0) {
-		return 45000;
-	}
-	return size_array[size_n];
-}
-
+/*
+ * Receives a pointer to a reservation and returns its key
+ * for the hashtable.
+ */
 char *get_key_res(void *ptr) {
 	reservation *res = (reservation*) ptr;
 	char *key = (char*) my_alloc(strlen(res->code) + 1);
@@ -185,92 +171,12 @@ char *get_key_res(void *ptr) {
 	return key;
 }
 
-void insert_ht(void *ptr, hashtable *ht, void *ts, char* get_key(void*)) {
-	char *key = get_key(ptr);
-	int len_key = strlen(key);
-	long i = hash_str1(key, len_key, ht->size);
-	long k = hash_str2(key, len_key, ht->size);
-
-	while (ht->array[i] && ht->array[i] != ts) {
-		i = (i + k) % ht->size;
-	}
-	ht->array[i] = ptr;
-
-	if (++ht->amount > ht->size * 2 / 3) {
-		expand_ht(ht, ts, get_key);
-	}
-	free(key);
-}
-
-void expand_ht(hashtable *ht, void *ts, char* get_key(void*)) {
-	long old_size = ht->size, new_size = get_size(++ht->size_n, ht->size);
-	void **new_array = (void**) my_alloc(sizeof(void*) * new_size);
-	void **old_array = ht->array;
-	long i;
-
-	for (i = 0; i < new_size; i++) {
-		new_array[i] = NULL;
-	}
-
-	ht->array = new_array;
-	ht->size = new_size;
-
-	for (i = 0; i < old_size; i++) {
-		if (old_array[i] && old_array[i] != ts) {
-			insert_ht(old_array[i], ht, ts, get_key);
-		}
-	}
-	free(old_array);
-}
-
-void remove_from_ht(void *ptr, hashtable *ht, void *ts, char* get_key(void*)) {
-	char *key1 = get_key(ptr), *key2;
-	int len_key = strlen(key1);
-	long i = hash_str1(key1, len_key, ht->size);
-	long k = hash_str2(key1, len_key, ht->size);
-
-	while (TRUE) {
-		if (ht->array[i] == ts) {
-			i = (i + k) % ht->size;
-			continue;
-		};
-		key2 = get_key(ht->array[i]);
-		if (!strcmp(key2, key1)) {
-			free(key2);
-			break;
-		}
-		free(key2);
-		i = (i + k) % ht->size;
-	}
-	ht->array[i] = ts;
-	--ht->amount;
-	free(key1);
-}
-
-void *get_from_ht(char key1[], hashtable *ht, void *ts, char* get_key(void*)) {
-	int len_key = strlen(key1);
-	long i = hash_str1(key1, len_key, ht->size);
-	long k = hash_str2(key1, len_key, ht->size);
-	char *key2;
-
-	while (ht->array[i]) {
-		if (ht->array[i] == ts) {
-			i = (i + k) % ht->size;
-			continue;
-		};
-		key2 = get_key(ht->array[i]);
-		if (!strcmp(key2, key1)) {
-			free(key2);
-			break;
-		}
-		free(key2);
-		i = (i + k) % ht->size;
-	}
-
-	return ht->array[i];
-	free(key1);
-}
-
+/*
+ * Returns an int that corresponds to the index where a given
+ * reservation is located inside a given array of reservation
+ * pointers. Returns the index where it should be at if the
+ * reservation isnt found in the array. (binary search)
+ */
 int get_res_index(reservation **res_array, reservation *res, int count) {
 	int upper = count - 1;
 	int lower = 0;
@@ -290,6 +196,9 @@ int get_res_index(reservation **res_array, reservation *res, int count) {
 	return i;
 }
 
+/*
+ * Deletes a pointer at a given index from a reservation pointer array.
+ */
 void rem_res_array(reservation **array, int index, int count) {
 	while (index < count - 1) {
 		array[index] = array[index + 1];
@@ -297,6 +206,10 @@ void rem_res_array(reservation **array, int index, int count) {
 	}
 }
 
+/*
+ * Inserts a pointer to a reservation at a given index in
+ * a reservation pointer array.
+ */
 void add_res_array(reservation **array, int i, reservation *ptr, int count) {
 	while (count > i) {
 		array[count] = array[count - 1];

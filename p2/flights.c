@@ -14,24 +14,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-/* Tracks the global amount of flights */
-/*int global_flight_amount = 0;*/
-
-/* Tracks the amount of flights that were sorted */
-/*int global_srtd_flt_amount = 0;*/
-
-/* Array containing every flight */
-/*flight global_flt_list[MAX_FLT];*/
-
-
-/* 
- * Auxiliary array of flights that stores flights departing/arriving
- * to a given airport as part of the execution of 'c' and 'p' commands.
- */
-/*flight *global_srtd_flt_arr[MAX_FLT];*/
-
 /*
- * Adds a flight to the global array of flights.
+ * Adds a flight to the system.
  */
 void add_flight(info *global_info, flight *flt) {
 	flt->res_array = (reservation**) my_alloc(flt->cap * sizeof(reservation));
@@ -77,25 +61,6 @@ int invalid_flt_args(info *global_info, flight *new_f) {
 	return TRUE;
 }
  
-/*
- * Receives a flight code from a new flight and returns 1
- * if there is an already existing flight in the system
- * with that code, on the same day as the new flight.
- * Returns 0 otherwise.
- */
-/*flight *get_flight(char str[], timestamp dt) {
-	int i;
-	flight flt, *ptr = NULL;
-
-	for (i = 0; i < global_flight_amount; i++) {
-		flt = global_flt_list[i];
-		if (!strcmp(flt.code, str) && same_day(flt.date, dt)) {
-			ptr = &flt;
-		}
-	}
-	return ptr;
-}*/
-
 /*
  * Prints out relevant info for every flight currently in the
  * unsorted flight array;
@@ -258,13 +223,19 @@ void sort_flights(info *global_info) {
 	}
 }
 
-/* maybe por a key diretamente no struct voo para ser fast */
+/*
+ * Gets the key corresponding to a given flight to be
+ * used in the hashtable.
+ */
 char *get_key_flt(void *ptr) {
 	flight *flt = (flight*) ptr;
 
 	return make_flt_key(flt->code, flt->date);
 }
 
+/*
+ * Makes and returns a key from a flight code and flight date.
+ */
 char *make_flt_key(char code[], timestamp date) {
 	int key_len = FLIGHT_CODE_LENGTH + 2 + 2 + 4;
 	char *key = (char*) my_alloc(key_len);
@@ -274,6 +245,9 @@ char *make_flt_key(char code[], timestamp date) {
 	return key;
 }
 
+/*
+ * Removes a flight from the system.
+ */
 int remove_flight(info *global_info, char code[]) {
 	flight *flt;
 	flight **flt_array = global_info->flt_array;
@@ -301,6 +275,9 @@ int remove_flight(info *global_info, char code[]) {
 	return success;
 }
 
+/*
+ * Removes a flight pointer from the array of flight pointers.
+ */
 void rem_flt_array(flight **array, int index, int count) {
 	while (index < count - 1) {
 		array[index] = array[index + 1];

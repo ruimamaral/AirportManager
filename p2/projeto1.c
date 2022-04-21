@@ -185,6 +185,10 @@ void exec_set_time() {
 	printf("%02d-%02d-%d\n", global_date.d, global_date.mth, global_date.y);
 }
 
+/*
+ * Handles the 'r' command. Adds a reservation to the system
+ * or lists reservations for a given flight.
+ */
 void exec_add_reservation(info *global_info) {
 	char flt_code[FLIGHT_CODE_LENGTH], res_code[MAX_CMD_LEN];
 	int day, month, year, pass_n, error;
@@ -195,13 +199,17 @@ void exec_add_reservation(info *global_info) {
 		error = add_reservation(global_info, flt_code, day, month, year, res_code, pass_n);
 	} else {
 		error = list_reservations(global_info, flt_code, day, month, year);
-		res_code[0] = '\0'; /* maybe brokey */
+		res_code[0] = '\0';
 	}
 	if (error) {
 		print_res_error(error, flt_code, res_code);
 	}
 }
 
+/*
+ * Handles the 'e' command, deletes eiher a flight or a reservation
+ * from the system.
+ */
 void exec_remove_item(info *global_info) {
 	char buffer[MAX_CMD_LEN];
 	int len, success = 0;
@@ -237,6 +245,10 @@ int isupper_str(char str[]) {
 	return TRUE;
 }
 
+/*
+ * A safe version of malloc that stops the program if no memory
+ * is available.
+ */
 void *my_alloc(unsigned size) {
 	void *ptr = malloc(size);
 	if (!ptr) {
@@ -246,6 +258,9 @@ void *my_alloc(unsigned size) {
 	return ptr;
 }
 
+/*
+ * Frees all the memory allocated by the program.
+ */
 void free_mem(info *global_info) {
 	flight **flt_array = global_info->flt_array;
 	flight *flt;

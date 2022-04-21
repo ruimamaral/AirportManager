@@ -47,25 +47,13 @@ typedef struct{
 	int res_n;
 	struct reservation **res_array;
 } flight;
-/*
-typedef struct flt_node {
-	struct flt_node *next;
-	flight flt;
-} flt_node;
 
-typedef struct node *flt_link;
-*/
 typedef struct reservation{
 	char *code;
 	flight *flt;
 	int pass_n;
 } reservation;
-/*
-typedef struct {
-	flt_link head;
-	flt_link tail;
-} flt_linked_lst;
-*/
+
 typedef struct{
 	long size;
 	int size_n;
@@ -149,15 +137,18 @@ reservation *create_res(char[], flight*, int);
 void print_res_error(int, char[], char[]);
 int check_res_code(char[]);
 int remove_reservation(info*, char[]);
+char *get_key_res(void*);
+int get_res_index(reservation**, reservation*, int);
+void rem_res_array(reservation**, int, int);
+void add_res_array(reservation**, int, reservation*, int);
+
+/* hashtable.c */
+
 hashtable *init_ht(int);
 long hash_str1(char[], int, long);
 long hash_str2(char[], int, long);
 long get_size(int, int);
-char *get_key_res(void*);
 void insert_ht(void*, hashtable*, void*, char* (*)(void*));
 void expand_ht(hashtable*, void*, char* (*)(void*));
 void remove_from_ht(void*, hashtable*, void*, char* (*)(void*));
 void *get_from_ht(char[], hashtable*, void*, char* (*)(void*));
-int get_res_index(reservation**, reservation*, int);
-void rem_res_array(reservation**, int, int);
-void add_res_array(reservation**, int, reservation*, int);
