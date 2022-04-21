@@ -40,16 +40,20 @@ int get_unix_time(timestamp ts) {
  * year until the month corresponding to the integer received.
  */
 int get_month_mins(int month) {
-	/* Array containing the accumulated minute
-	 * sum of every month in the year */
-	static const int min_sum[] = {
-        0, 44640, 84960, 129600,
-        172800, 217440, 260640, 305280,
-        349920, 393120, 437760, 480960
-    };
-	return min_sum[month];
-}
+	/* Array containing the amout of days per
+	 * month from january to december */
+	static const int days_in_month[] = {
+		31, 28, 31, 30,
+		31, 30, 31, 31,
+		30, 31, 30, 31
+	};
+	int i, min_sum = 0;
 
+	for (i = 0; i < month; i++) {
+		min_sum += days_in_month[i] * MINS_IN_DAY;
+	}
+	return min_sum;
+}
 /*
  * Converts a minute sum into a regular date, returning it as
  * a timestamp.
