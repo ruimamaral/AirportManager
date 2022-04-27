@@ -39,7 +39,7 @@ void add_airport(char id[], char country[], char city[]) {
 int invalid_ap_args(char id[]) {
 	int len = strlen(id), i;
 
-	if (len < 3 || len > 5) {
+	if (len < 3) {
 		printf("invalid airport ID\n");
 		return TRUE;
 	}
