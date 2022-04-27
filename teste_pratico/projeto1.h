@@ -9,7 +9,7 @@
 
 #define TRUE 1
 #define FALSE 0
-#define AP_ID_LENGTH 4
+#define AP_ID_LENGTH 6
 #define AP_COUNTRY_LENGTH 31
 #define AP_CITY_LENGTH 51
 #define FLIGHT_CODE_LENGTH 7

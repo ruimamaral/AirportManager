@@ -143,7 +143,8 @@ int invalid_duration(int hours, int mins) {
 
 /*
  * Fills up auxiliary array of flights with every flight departing
- * from the airport represented by the id received.
+ * from the airport represented by the id received that has its departure
+ * on the current day.
  */
 void get_flts_departing(info *global_info, char id[]) {
 	int i;
@@ -155,7 +156,7 @@ void get_flts_departing(info *global_info, char id[]) {
 
 	for (i = 0; i < flt_amount; i++) {
 		flt1 = global_info->flt_array[i];
-		if (!strcmp(flt1->origin, id)) {
+		if (!strcmp(flt1->origin, id) && same_day(flt1->date, global_date)) {
 			flt2 = (flight*) my_alloc(sizeof(flight));
 			*flt2 = *flt1;
 			srtd_flt_array[global_info->srtd_flt_amount++] = flt2;
@@ -246,7 +247,7 @@ char *make_flt_key(char code[], timestamp date) {
 }
 
 /*
- * Removes a flight from the system.
+ * Removes a flight from the system if it already departed.
  */
 int remove_flight(info *global_info, char code[]) {
 	flight *flt;
@@ -258,7 +259,7 @@ int remove_flight(info *global_info, char code[]) {
 
 	for (i = 0; i < flt_ht->amount; i++) {
 		flt = flt_array[i];
-		if (!strcmp(code, flt->code)) {
+		if (!strcmp(code, flt->code) && datecmp(flt->date, global_date) < 0) {
 			remove_from_ht(flt, flt_ht, ts, get_key_flt);
 			for(j = flt->res_n - 1; j >= 0; j--) {
 				remove_from_ht(flt->res_array[j], res_ht, ts, get_key_res);

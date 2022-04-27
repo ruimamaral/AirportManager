@@ -10,6 +10,7 @@
 #include "projeto1.h"
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 /* Tracks the global amount of airports */
 int global_airport_amount = 0;
@@ -36,9 +37,19 @@ void add_airport(char id[], char country[], char city[]) {
  * Returns 1 if it meets all the requirements and 0 if otherwise.
  */
 int invalid_ap_args(char id[]) {
-	if (!isupper_str(id)) {
+	int len = strlen(id), i;
+
+	if (len < 3 || len > 5) {
 		printf("invalid airport ID\n");
-	} else if (global_airport_amount >= MAX_AP) {
+		return TRUE;
+	}
+	for (i = 0; i < len; i++) {
+		if (!(isupper(id[i]) || islower(id[i]))) {
+			printf("invalid airport ID\n");
+			return TRUE;
+		}
+	}
+	if (global_airport_amount >= MAX_AP) {
 		printf("too many airports\n");
 	} else if (is_airport(id)) {
 		printf("duplicate airport\n");
